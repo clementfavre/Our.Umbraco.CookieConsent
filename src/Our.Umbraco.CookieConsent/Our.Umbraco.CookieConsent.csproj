@@ -15,11 +15,11 @@
     <Title>Our.Umbraco.CookieConsent</Title>
     <Description>Our.Umbraco.CookieConsent: A Umbraco package for adding a customizable cookie consent banner to your Umbraco site. Powered by the Orestbida/CookieConsent library.</Description>
     <PackageTags>umbraco plugin umbraco-marketplace package cookie-consent dashboard</PackageTags>
-    <Authors>D0LBA3B</Authors>
-    <Company>D0LBA3B</Company>
-    <PackageProjectUrl>https://github.com/D0LBA3B/Our.Umbraco.CookieConsent</PackageProjectUrl>
-    <Copyright>Copyright © D0LBA3B 2024</Copyright>
-    <RepositoryUrl>https://github.com/D0LBA3B/Our.Umbraco.CookieConsent</RepositoryUrl>
+    <Authors>Clément Favre</Authors>
+    <Company>Clément Favre</Company>
+    <PackageProjectUrl>https://github.com/clementfavre/Our.Umbraco.CookieConsent</PackageProjectUrl>
+    <Copyright>Copyright © Clément Favre 2024-2026</Copyright>
+    <RepositoryUrl>https://github.com/clementfavre/Our.Umbraco.CookieConsent</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageReadmeFile>README.md</PackageReadmeFile>
