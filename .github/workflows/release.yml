@@ -1,0 +1,85 @@
+name: Release
+
+# Manual only: pick a version, inspect the artifact, then publish when happy
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Package version to build (e.g. 0.0.3)'
+        required: true
+        type: string
+      publish:
+        description: 'Push to NuGet (leave off for a dry run)'
+        required: true
+        type: boolean
+        default: false
+
+env:
+  PROJECT: src/Our.Umbraco.CookieConsent/Our.Umbraco.CookieConsent.csproj
+
+# The workflow only reads the repository, publishing goes through NUGET_API_KEY
+permissions:
+  contents: read
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    # NUGET_API_KEY lives in this environment, and its protection rules decide who may release
+    environment: nuget
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+
+      - name: Restore
+        run: dotnet restore ${{ env.PROJECT }}
+
+      - name: Build
+        run: dotnet build ${{ env.PROJECT }} -c Release --no-restore
+
+      - name: Pack
+        run: dotnet pack ${{ env.PROJECT }} -c Release --no-build -o artifacts -p:Version=${{ inputs.version }}
+
+      - name: Verify package contents
+        run: |
+          PKG=$(ls artifacts/*.nupkg)
+          echo "Inspecting $PKG"
+          unzip -l "$PKG" | tee listing.txt
+
+          REQUIRED="
+          lib/net8.0/Our.Umbraco.CookieConsent.dll
+          staticwebassets/App_Plugins/Our.Umbraco.CookieConsent/package.manifest
+          staticwebassets/App_Plugins/Our.Umbraco.CookieConsent/CookieConsentDashboard.html
+          staticwebassets/App_Plugins/Our.Umbraco.CookieConsent/CookieConsentDashboard.controller.js
+          staticwebassets/App_Plugins/Our.Umbraco.CookieConsent/CookieConsentDashboard.css
+          staticwebassets/App_Plugins/Our.Umbraco.CookieConsent/Lang/en-US.xml
+          staticwebassets/libraries/cookieconsent-orestbida/cookieconsent.umd.min.js
+          staticwebassets/libraries/cookieconsent-orestbida/cookieconsent.min.css
+          "
+
+          MISSING=0
+          for entry in $REQUIRED; do
+            if grep -qF "$entry" listing.txt; then
+              echo "ok      $entry"
+            else
+              echo "MISSING $entry"
+              MISSING=1
+            fi
+          done
+
+          if [ "$MISSING" -ne 0 ]; then
+            echo "::error::The package is missing required files, refusing to publish"
+            exit 1
+          fi
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: nupkg-${{ inputs.version }}
+          path: artifacts/*.nupkg
+
+      - name: Push to NuGet
+        if: ${{ inputs.publish }}
+        run: dotnet nuget push artifacts/*.nupkg --source https://api.nuget.org/v3/index.json --api-key ${{ secrets.NUGET_API_KEY }} --skip-duplicate
