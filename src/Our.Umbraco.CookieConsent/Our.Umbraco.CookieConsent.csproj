@@ -10,7 +10,7 @@
   </PropertyGroup>
   <PropertyGroup>
     <PackageId>Our.Umbraco.CookieConsent</PackageId>
-    <Version>0.0.2</Version>
+    <Version>0.0.4</Version>
     <Product>Our.Umbraco.CookieConsent - Cookie Management for Umbraco</Product>
     <Title>Our.Umbraco.CookieConsent</Title>
     <Description>Our.Umbraco.CookieConsent: A Umbraco package for adding a customizable cookie consent banner to your Umbraco site. Powered by the Orestbida/CookieConsent library.</Description>
