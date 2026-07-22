@@ -1,67 +1,44 @@
-﻿.cookieconsent-panel-group {
-    margin-bottom: 20px;
-    padding: 15px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    background-color: #f9f9f9;
+/* Umbraco supplies the boxes, controls and buttons, only the gaps are styled here */
+
+.cookieconsent-dashboard {
+    padding-bottom: 80px;
 }
 
-.cookieconsent-panel-title {
-    font-size: 18px;
-    font-weight: bold;
-    margin-bottom: 10px;
-    color: #333;
-    border-bottom: 1px #1b264f solid;
-    padding: 10px;
-}
-
-.cookieconsent-checkbox-list {
+.cookieconsent-toggles {
     display: flex;
     flex-wrap: wrap;
-    gap: 10px;
-    margin-top: 10px;
+    gap: 10px 40px;
 }
 
-    .cookieconsent-checkbox-list label {
-        display: flex;
-        align-items: center;
-        gap: 5px;
-        font-size: 14px;
-        color: #555;
-    }
-
-        .cookieconsent-checkbox-list label input {
-            margin-right: 5px;
-        }
-
-.cookieconsent-panel-checks label {
-    padding-top: 15px;
-}
-
-.cookieconsent-panel-checks label {
-    display: block;
-    margin-bottom: 10px;
-    font-size: 14px;
-    color: #333;
-}
-
-    .cookieconsent-panel-checks label select,
-    .cookieconsent-panel-checks label input[type="checkbox"] {
-        margin-left: 10px;
-    }
-
-.cookieconsent-panel-checks select {
-    padding: 5px 10px;
-    font-size: 14px;
-    border: 1px solid #ccc;
+.cookieconsent-item {
+    border: 1px solid #d8d7d9;
     border-radius: 3px;
-    background-color: #fff;
-    color: #333;
+    padding: 15px 20px 5px;
+    margin-bottom: 15px;
 }
 
-.cookieconsent-actions {
-    margin-top: 20px;
-    display: flex;
-    justify-content: flex-start;
-    gap: 10px;
+.cookieconsent-hint {
+    max-width: 65ch;
+    color: #515054;
+}
+
+.cookieconsent-empty {
+    color: #868689;
+    font-style: italic;
+    margin-bottom: 15px;
+}
+
+.cookieconsent-example {
+    max-width: 65ch;
+    white-space: pre-wrap;
+    background-color: #f3f3f5;
+    border: 1px solid #d8d7d9;
+    border-radius: 3px;
+    padding: 10px 15px;
+    margin-bottom: 20px;
+}
+
+.cookieconsent-code {
+    width: 100%;
+    font-family: Consolas, Monaco, monospace;
 }

@@ -6,6 +6,36 @@
 
         vm.loading = true;
         vm.scriptTypes = ["Necessary", "Functionality", "Analytics", "Marketing"];
+
+        // The settings expose raw category keys, the dashboard shows editor-facing wording
+        vm.categories = {
+            necessary: {
+                name: "Strictly necessary",
+                description: "Needed for the site to work, so visitors are never asked about these."
+            },
+            functionality: {
+                name: "Functionality",
+                description: "Remembers choices such as language or region."
+            },
+            analytics: {
+                name: "Analytics",
+                description: "Measures how visitors browse the site."
+            },
+            marketing: {
+                name: "Marketing",
+                description: "Used to show advertising based on browsing habits."
+            }
+        };
+
+        vm.categoryLabel = function (key) {
+            var category = vm.categories[String(key).toLowerCase()];
+            return category ? category.name : key;
+        };
+
+        vm.categoryDescription = function (key) {
+            var category = vm.categories[String(key).toLowerCase()];
+            return category ? category.description : "";
+        };
         vm.enums = {
             consentModalLayouts: [
                 { value: 'Box', displayName: 'box' },
