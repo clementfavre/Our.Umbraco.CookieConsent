@@ -17,14 +17,15 @@ on:
 env:
   PROJECT: src/Our.Umbraco.CookieConsent/Our.Umbraco.CookieConsent.csproj
 
-# The workflow only reads the repository, publishing goes through NUGET_API_KEY
+# id-token lets the job exchange a GitHub OIDC token for a short-lived NuGet key
 permissions:
   contents: read
+  id-token: write
 
 jobs:
   release:
     runs-on: ubuntu-latest
-    # NUGET_API_KEY lives in this environment, and its protection rules decide who may release
+    # Protection rules decide who may release, and the nuget.org policy is bound to this name
     environment: nuget
     steps:
       - uses: actions/checkout@v4
@@ -80,6 +81,14 @@ jobs:
           name: nupkg-${{ inputs.version }}
           path: artifacts/*.nupkg
 
+      # The key is valid for one hour and single use, so it is requested right before pushing
+      - name: NuGet login
+        if: ${{ inputs.publish }}
+        id: login
+        uses: NuGet/login@v1
+        with:
+          user: ${{ secrets.NUGET_USER }}
+
       - name: Push to NuGet
         if: ${{ inputs.publish }}
-        run: dotnet nuget push artifacts/*.nupkg --source https://api.nuget.org/v3/index.json --api-key ${{ secrets.NUGET_API_KEY }} --skip-duplicate
+        run: dotnet nuget push artifacts/*.nupkg --source https://api.nuget.org/v3/index.json --api-key ${{ steps.login.outputs.NUGET_API_KEY }} --skip-duplicate
