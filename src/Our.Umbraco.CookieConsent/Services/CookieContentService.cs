@@ -1,6 +1,8 @@
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using NPoco;
+using Umbraco.Cms.Core.Cache;
+using Umbraco.Extensions;
 using Our.Umbraco.CookieConsent.Interfaces;
 using Our.Umbraco.CookieConsent.Models;
 using Umbraco.Cms.Core.Services;
@@ -14,6 +16,11 @@ namespace Our.Umbraco.CookieConsent.Services
         private readonly ILogger<CookieConsentService> _logger;
         private readonly ILocalizationService _localizationService;
         private readonly DictionaryKeySeeder _dictionaryKeySeeder;
+        private readonly AppCaches _appCaches;
+
+        // The front-end view resolves the settings on every page render, so they are cached
+        private const string SettingsCacheKey = "Our.Umbraco.CookieConsent.Settings";
+        private static readonly TimeSpan SettingsCacheDuration = TimeSpan.FromMinutes(5);
 
         private const string DefaultSettingsSql = @"SELECT TOP(1) 
                                 [Id],
@@ -39,43 +46,51 @@ namespace Our.Umbraco.CookieConsent.Services
         public CookieConsentService(IScopeProvider scopeProvider,
             ILogger<CookieConsentService> logger,
             ILocalizationService localizationService,
-            DictionaryKeySeeder dictionaryKeySeeder)
+            DictionaryKeySeeder dictionaryKeySeeder,
+            AppCaches appCaches)
         {
             _scopeProvider = scopeProvider;
             _logger = logger;
             _localizationService = localizationService;
             _dictionaryKeySeeder = dictionaryKeySeeder;
+            _appCaches = appCaches;
         }
 
         public CookieConsentSettingsModel GetSettings()
         {
             try
             {
-                CookieConsentSettingsSqlModel? sqlSettings;
-
-                using (var scope = _scopeProvider.CreateScope())
-                {
-                    var sql = scope.Database.DatabaseType == DatabaseType.SQLite
-                        ? DefaultSettingsSqlLite
-                        : DefaultSettingsSql;
-
-                    sqlSettings = scope.Database.FirstOrDefault<CookieConsentSettingsSqlModel>(sql);
-                    scope.Complete();
-                }
-
-                // Nothing stored yet (fresh install): fall back to the defaults instead of failing
-                var settings = CookieConsentMapper.MapToCookieModel(sqlSettings);
-                if (settings == null)
-                    return GetDefaultSettings();
-
-                settings.AvailableLanguages = GetAvailableLanguages();
-                return settings;
+                return _appCaches.RuntimeCache.GetCacheItem(SettingsCacheKey, LoadSettings, SettingsCacheDuration)
+                       ?? GetDefaultSettings();
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Unexpected error while fetching cookie consent settings.");
                 return GetDefaultSettings();
             }
+        }
+
+        private CookieConsentSettingsModel LoadSettings()
+        {
+            CookieConsentSettingsSqlModel? sqlSettings;
+
+            using (var scope = _scopeProvider.CreateScope())
+            {
+                var sql = scope.Database.DatabaseType == DatabaseType.SQLite
+                    ? DefaultSettingsSqlLite
+                    : DefaultSettingsSql;
+
+                sqlSettings = scope.Database.FirstOrDefault<CookieConsentSettingsSqlModel>(sql);
+                scope.Complete();
+            }
+
+            // Nothing stored yet (fresh install): fall back to the defaults instead of failing
+            var settings = CookieConsentMapper.MapToCookieModel(sqlSettings);
+            if (settings == null)
+                return GetDefaultSettings();
+
+            settings.AvailableLanguages = GetAvailableLanguages();
+            return settings;
         }
 
         public void SaveSettings(CookieConsentSettingsModel settings)
@@ -86,17 +101,13 @@ namespace Our.Umbraco.CookieConsent.Services
                 throw new ArgumentException("Settings cannot be null.", nameof(settings));
             }
 
-            if (settings?.ApplicableCategories != null)
+            if (settings.ApplicableCategories != null)
             {
-                foreach (var property in typeof(CookieCategoriesModel).GetProperties())
+                // delete unused categories?
+                foreach (var category in settings.ApplicableCategories.GetAll())
                 {
-                    if (property.PropertyType == typeof((bool Enabled, bool ReadOnly)))
-                    {
-                        var tupleValue = ((bool Enabled, bool ReadOnly))property.GetValue(settings.ApplicableCategories);
-                        if (tupleValue.Enabled)
-                            _dictionaryKeySeeder.CreateSection(property.Name);
-                    }
-                    // delete unused categories?
+                    if (category.Enabled)
+                        _dictionaryKeySeeder.CreateSection(category.Name);
                 }
             }
 
@@ -144,6 +155,8 @@ namespace Our.Umbraco.CookieConsent.Services
             });
 
             scope.Complete();
+
+            _appCaches.RuntimeCache.Clear(SettingsCacheKey);
         }
 
         private List<(string Value, string DisplayName)> GetAvailableLanguages()

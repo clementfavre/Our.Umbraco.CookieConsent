@@ -8,29 +8,26 @@
     CookieConsentSettingsModel cookieSettings = CookieConsentService.GetSettings();
 
     var categories = new List<dynamic>();
-    foreach (var property in typeof(CookieCategoriesModel).GetProperties())
+    foreach (var category in cookieSettings.ApplicableCategories?.GetAll() ?? Enumerable.Empty<(string Name, bool Enabled, bool ReadOnly)>())
     {
-        var value = ((bool Enabled, bool ReadOnly))property.GetValue(cookieSettings.ApplicableCategories);
-        if (value.Enabled)
+        if (!category.Enabled)
+            continue;
+
+        var sectionTitle = UmbracoHelper.GetDictionaryValue(
+            string.Format(Translations.PreferencesModal.Sections.Title, category.Name)
+        );
+        var sectionDescr = UmbracoHelper.GetDictionaryValue(
+            string.Format(Translations.PreferencesModal.Sections.Description, category.Name)
+        );
+
+        categories.Add(new
         {
-            var categoryName = property.Name;
-
-            var sectionTitle = UmbracoHelper.GetDictionaryValue(
-                string.Format(Translations.PreferencesModal.Sections.Title, categoryName)
-            );
-            var sectionDescr = UmbracoHelper.GetDictionaryValue(
-                string.Format(Translations.PreferencesModal.Sections.Description, categoryName)
-            );
-
-            categories.Add(new
-            {
-                Name = categoryName,
-                LowerName = categoryName.ToLower(),
-                Title = sectionTitle,
-                Description = sectionDescr,
-                IsReadOnly = value.ReadOnly.ToString().ToLower()
-            });
-        }
+            Name = category.Name,
+            LowerName = category.Name.ToLower(),
+            Title = sectionTitle,
+            Description = sectionDescr,
+            IsReadOnly = category.ReadOnly.ToString().ToLower()
+        });
     }
 
     var googleConsentModeScript = cookieSettings.BuiltInScripts?
