@@ -47,5 +47,8 @@
       <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
       <CopyToPublishDirectory>Always</CopyToPublishDirectory>
     </Content>
+    <!-- EnableDefaultContentItems is off, so wwwroot must be declared explicitly or the
+         static web assets (App_Plugins, libraries) never make it into the package -->
+    <Content Include="wwwroot\**\*.*" />
   </ItemGroup>
 </Project>
