@@ -105,7 +105,7 @@
 
         vm.addBuiltInScript = function () {
             vm.settings.builtInScripts.push({
-                provider: "GoogleAnalytics",
+                provider: "GoogleConsentMode",
                 id: "",
             });
         };
