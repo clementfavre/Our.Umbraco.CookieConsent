@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using Our.Umbraco.CookieConsent.Interfaces;
 using Our.Umbraco.CookieConsent.Models;
 using Umbraco.Cms.Web.BackOffice.Controllers;
@@ -26,14 +27,28 @@ public class CookieConsentController : UmbracoAuthorizedJsonController
         if (settings == null)
             return BadRequest("Invalid settings provided.");
 
-        _cookieConsentService.SaveSettings(settings);
-        return Ok("Settings have been successfully saved.");
+        try
+        {
+            _cookieConsentService.SaveSettings(settings);
+            return Ok("Settings have been successfully saved.");
+        }
+        catch (Exception)
+        {
+            return StatusCode(StatusCodes.Status500InternalServerError, "Failed to save the settings.");
+        }
     }
 
     [HttpGet]
-    public CookieConsentSettingsModel ResetSettings()
+    public IActionResult ResetSettings()
     {
-        _cookieConsentService.ResetSettings();
-        return _cookieConsentService.GetSettings();
+        try
+        {
+            _cookieConsentService.ResetSettings();
+            return Ok(_cookieConsentService.GetSettings());
+        }
+        catch (Exception)
+        {
+            return StatusCode(StatusCodes.Status500InternalServerError, "Failed to reset the settings.");
+        }
     }
 }

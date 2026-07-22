@@ -30,9 +30,11 @@ namespace Our.Umbraco.CookieConsent.Services
                              ORDER BY [LastUpdated] DESC
                              LIMIT 1";
 
-        private const string InsertSettingsSql = @"INSERT INTO [CookieConsentSettings] 
+        private const string InsertSettingsSql = @"INSERT INTO [CookieConsentSettings]
                                 ([SettingsJson], [LastUpdated])
                              VALUES (@settingsJson, @lastUpdated)";
+
+        private const string DeleteSettingsSql = @"DELETE FROM [CookieConsentSettings]";
 
         public CookieConsentService(IScopeProvider scopeProvider,
             ILogger<CookieConsentService> logger,
@@ -49,17 +51,25 @@ namespace Our.Umbraco.CookieConsent.Services
         {
             try
             {
+                CookieConsentSettingsSqlModel? sqlSettings;
+
                 using (var scope = _scopeProvider.CreateScope())
                 {
                     var sql = scope.Database.DatabaseType == DatabaseType.SQLite
                         ? DefaultSettingsSqlLite
                         : DefaultSettingsSql;
 
-                    var sqlSettings = scope.Database.FirstOrDefault<CookieConsentSettingsSqlModel>(sql);
-                    var settings = CookieConsentMapper.MapToCookieModel(sqlSettings);
-                    settings.AvailableLanguages = _localizationService.GetAllLanguages().Select(x => (Value: x.CultureInfo.TwoLetterISOLanguageName, DisplayName: x.CultureName)).ToList();
-                    return settings;
+                    sqlSettings = scope.Database.FirstOrDefault<CookieConsentSettingsSqlModel>(sql);
+                    scope.Complete();
                 }
+
+                // Nothing stored yet (fresh install): fall back to the defaults instead of failing
+                var settings = CookieConsentMapper.MapToCookieModel(sqlSettings);
+                if (settings == null)
+                    return GetDefaultSettings();
+
+                settings.AvailableLanguages = GetAvailableLanguages();
+                return settings;
             }
             catch (Exception ex)
             {
@@ -92,23 +102,13 @@ namespace Our.Umbraco.CookieConsent.Services
 
             try
             {
-                using (var scope = _scopeProvider.CreateScope())
-                {
-                    var settingsJson = JsonConvert.SerializeObject(settings);
-                    scope.Database.Execute(InsertSettingsSql, new
-                    {
-                        settingsJson,
-                        lastUpdated = DateTime.UtcNow
-                    });
-
-                    scope.Complete();
-                }
-
+                PersistSettings(settings);
                 _logger.LogInformation("Cookie consent settings saved successfully.");
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Unexpected error while saving cookie consent settings.");
+                throw;
             }
         }
 
@@ -117,23 +117,39 @@ namespace Our.Umbraco.CookieConsent.Services
             var settings = GetDefaultSettings();
             try
             {
-                using (var scope = _scopeProvider.CreateScope())
-                {
-                    var settingsJson = JsonConvert.SerializeObject(settings);
-                    scope.Database.Execute(InsertSettingsSql, new
-                    {
-                        settingsJson,
-                        lastUpdated = DateTime.UtcNow
-                    });
-                    scope.Complete();
-                }
+                PersistSettings(settings);
                 _logger.LogInformation("Cookie consent settings reset successfully.");
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Unexpected error while resetting cookie consent settings.");
+                throw;
             }
         }
+
+        /// <summary>
+        /// The table holds the current settings as a single row
+        /// </summary>
+        private void PersistSettings(CookieConsentSettingsModel settings)
+        {
+            using var scope = _scopeProvider.CreateScope();
+
+            var settingsJson = JsonConvert.SerializeObject(settings);
+
+            scope.Database.Execute(DeleteSettingsSql);
+            scope.Database.Execute(InsertSettingsSql, new
+            {
+                settingsJson,
+                lastUpdated = DateTime.UtcNow
+            });
+
+            scope.Complete();
+        }
+
+        private List<(string Value, string DisplayName)> GetAvailableLanguages()
+            => _localizationService.GetAllLanguages()
+                .Select(x => (Value: x.CultureInfo.TwoLetterISOLanguageName, DisplayName: x.CultureName))
+                .ToList();
 
         private CookieConsentSettingsModel GetDefaultSettings()
         {
@@ -146,7 +162,7 @@ namespace Our.Umbraco.CookieConsent.Services
                     Analytics = (false, false),
                     Marketing = (true, false)
                 },
-                AvailableLanguages = _localizationService.GetAllLanguages().Select(x => (Value: x.CultureInfo.TwoLetterISOLanguageName, DisplayName: x.CultureName)).ToList(),
+                AvailableLanguages = GetAvailableLanguages(),
                 LanguageOptions = new LanguageOptionsModel()
                 {
                     AutoDectect = true,

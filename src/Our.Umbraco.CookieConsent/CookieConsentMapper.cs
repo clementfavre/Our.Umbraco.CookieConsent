@@ -5,9 +5,9 @@ namespace Our.Umbraco.CookieConsent;
 
 public static class CookieConsentMapper
 {
-    public static CookieConsentSettingsModel MapToCookieModel(CookieConsentSettingsSqlModel sqlModel)
+    public static CookieConsentSettingsModel? MapToCookieModel(CookieConsentSettingsSqlModel? sqlModel)
     {
-        if (string.IsNullOrWhiteSpace(sqlModel.SettingsJson))
+        if (sqlModel == null || string.IsNullOrWhiteSpace(sqlModel.SettingsJson))
             return null;
 
         try
