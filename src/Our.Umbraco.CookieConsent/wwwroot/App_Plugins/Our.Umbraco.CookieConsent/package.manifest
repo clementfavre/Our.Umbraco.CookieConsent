@@ -1,9 +1,0 @@
-﻿{
-  "javascript": [
-    "~/App_Plugins/Our.Umbraco.CookieConsent/CookieConsentDashboard.controller.js"
-  ],
-  "css": [
-    "~/App_Plugins/Our.Umbraco.CookieConsent/CookieConsentDashboard.css"
-  ]
-
-}

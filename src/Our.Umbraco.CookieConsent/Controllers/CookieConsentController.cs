@@ -1,36 +1,47 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Our.Umbraco.CookieConsent.Interfaces;
 using Our.Umbraco.CookieConsent.Models;
-using Umbraco.Cms.Web.BackOffice.Controllers;
-using Umbraco.Cms.Web.BackOffice.Filters;
-using Umbraco.Cms.Web.Common.Attributes;
+using Umbraco.Cms.Api.Common.Attributes;
+using Umbraco.Cms.Api.Management.Controllers;
+using Umbraco.Cms.Api.Management.Routing;
+using Umbraco.Cms.Web.Common.Authorization;
 
 namespace Our.Umbraco.CookieConsent.Controllers;
 
-[IsBackOffice]
-[JsonCamelCaseFormatter]
-public class CookieConsentController : UmbracoAuthorizedJsonController
+/// <summary>
+/// Backoffice endpoints for the dashboard, served under
+/// /umbraco/management/api/v1/cookie-consent
+/// </summary>
+[ApiController]
+[VersionedApiBackOfficeRoute("cookie-consent")]
+[MapToApi(CookieConsentApiConfiguration.ApiName)]
+[Authorize(Policy = AuthorizationPolicies.SectionAccessSettings)]
+public class CookieConsentController : ManagementApiControllerBase
 {
     private readonly ICookieConsentService _cookieConsentService;
 
     public CookieConsentController(ICookieConsentService cookieConsentService)
     => _cookieConsentService = cookieConsentService;
 
-    [HttpGet]
-    public CookieConsentSettingsModel GetSettings()
-    => _cookieConsentService.GetSettings();
+    [HttpGet("settings")]
+    [ProducesResponseType(typeof(CookieConsentSettingsModel), StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetSettings()
+    => Ok(await _cookieConsentService.GetSettingsAsync());
 
-    [HttpPost]
-    public IActionResult SaveSettings([FromBody] CookieConsentSettingsModel settings)
+    [HttpPost("settings")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public async Task<IActionResult> SaveSettings([FromBody] CookieConsentSettingsModel settings)
     {
         if (settings == null)
             return BadRequest("Invalid settings provided.");
 
         try
         {
-            _cookieConsentService.SaveSettings(settings);
-            return Ok("Settings have been successfully saved.");
+            await _cookieConsentService.SaveSettingsAsync(settings);
+            return Ok();
         }
         catch (Exception)
         {
@@ -38,13 +49,13 @@ public class CookieConsentController : UmbracoAuthorizedJsonController
         }
     }
 
-    [HttpGet]
-    public IActionResult ResetSettings()
+    [HttpPost("settings/reset")]
+    [ProducesResponseType(typeof(CookieConsentSettingsModel), StatusCodes.Status200OK)]
+    public async Task<IActionResult> ResetSettings()
     {
         try
         {
-            _cookieConsentService.ResetSettings();
-            return Ok(_cookieConsentService.GetSettings());
+            return Ok(await _cookieConsentService.ResetSettingsAsync());
         }
         catch (Exception)
         {

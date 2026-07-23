@@ -1,51 +1,56 @@
 using Microsoft.Extensions.Logging;
 using Our.Umbraco.CookieConsent.Models;
 using Our.Umbraco.CookieConsent.Services;
+using Umbraco.Cms.Core;
+using Umbraco.Cms.Core.Models;
 using Umbraco.Cms.Core.Services;
 
 namespace Our.Umbraco.CookieConsent;
 
 public class DictionaryKeySeeder
 {
-    private readonly ILocalizationService _localizationService;
+    private readonly IDictionaryItemService _dictionaryItemService;
+    private readonly ILanguageService _languageService;
     private readonly ILogger<CookieConsentService> _logger;
 
-    public DictionaryKeySeeder(ILocalizationService localizationService, ILogger<CookieConsentService> logger)
+    public DictionaryKeySeeder(IDictionaryItemService dictionaryItemService,
+        ILanguageService languageService,
+        ILogger<CookieConsentService> logger)
     {
-        _localizationService = localizationService;
+        _dictionaryItemService = dictionaryItemService;
+        _languageService = languageService;
         _logger = logger;
     }
 
-    public void CreateBaseKeys()
+    public async Task CreateBaseKeysAsync()
     {
-        var parentKey = CreateKey(Translations.NAMESPACE, "-");
-        CreateKey(Translations.ConsentModal.Title, "Your Privacy Settings", parentKey);
-        CreateKey(Translations.ConsentModal.Description, "We use cookies to improve your experience, analyze traffic, and personalize content. You can manage your preferences below or accept all cookies.", parentKey);
-        CreateKey(Translations.ConsentModal.CloseIconLabel, "Close this dialog", parentKey);
-        CreateKey(Translations.ConsentModal.AcceptAll, "Accept All Cookies", parentKey);
-        CreateKey(Translations.ConsentModal.RejectAll, "Reject All Cookies", parentKey);
-        CreateKey(Translations.ConsentModal.ManagePreferences, "Manage Cookie Preferences", parentKey);
-        CreateKey(Translations.ConsentModal.Footer, "Your choices will be saved for future visits. You can update them at any time.", parentKey);
+        var parentKey = await CreateKeyAsync(Translations.NAMESPACE, "-");
+        await CreateKeyAsync(Translations.ConsentModal.Title, "Your Privacy Settings", parentKey);
+        await CreateKeyAsync(Translations.ConsentModal.Description, "We use cookies to improve your experience, analyze traffic, and personalize content. You can manage your preferences below or accept all cookies.", parentKey);
+        await CreateKeyAsync(Translations.ConsentModal.CloseIconLabel, "Close this dialog", parentKey);
+        await CreateKeyAsync(Translations.ConsentModal.AcceptAll, "Accept All Cookies", parentKey);
+        await CreateKeyAsync(Translations.ConsentModal.RejectAll, "Reject All Cookies", parentKey);
+        await CreateKeyAsync(Translations.ConsentModal.ManagePreferences, "Manage Cookie Preferences", parentKey);
+        await CreateKeyAsync(Translations.ConsentModal.Footer, "Your choices will be saved for future visits. You can update them at any time.", parentKey);
 
-        CreateKey(Translations.PreferencesModal.Title, "Manage Your Cookie Preferences", parentKey);
-        CreateKey(Translations.PreferencesModal.CloseIconLabel, "Close preferences dialog", parentKey);
-        CreateKey(Translations.PreferencesModal.AcceptAll, "Accept All Cookies", parentKey);
-        CreateKey(Translations.PreferencesModal.RejectAll, "Reject All Cookies", parentKey);
-        CreateKey(Translations.PreferencesModal.Save, "Save My Preferences", parentKey);
-        CreateKey(Translations.PreferencesModal.ServiceCounterLabel, "Enabled Services: {count}", parentKey);
+        await CreateKeyAsync(Translations.PreferencesModal.Title, "Manage Your Cookie Preferences", parentKey);
+        await CreateKeyAsync(Translations.PreferencesModal.CloseIconLabel, "Close preferences dialog", parentKey);
+        await CreateKeyAsync(Translations.PreferencesModal.AcceptAll, "Accept All Cookies", parentKey);
+        await CreateKeyAsync(Translations.PreferencesModal.RejectAll, "Reject All Cookies", parentKey);
+        await CreateKeyAsync(Translations.PreferencesModal.Save, "Save My Preferences", parentKey);
+        await CreateKeyAsync(Translations.PreferencesModal.ServiceCounterLabel, "Enabled Services: {count}", parentKey);
     }
 
     // sectionName = analytics / marketing / functional ...
-    public void CreateSection(string sectionName)
+    public async Task CreateSectionAsync(string sectionName)
     {
-        var parentKey = _localizationService.GetDictionaryItemByKey(Translations.NAMESPACE)?.Key;
-        if (parentKey is null)
-            parentKey = CreateKey(Translations.NAMESPACE, "-");
+        var parentKey = (await _dictionaryItemService.GetAsync(Translations.NAMESPACE))?.Key
+                        ?? await CreateKeyAsync(Translations.NAMESPACE, "-");
 
-        parentKey = CreateKey(sectionName, "-", parentKey);
+        parentKey = await CreateKeyAsync(sectionName, "-", parentKey);
 
-        string title = string.Empty;
-        string description = string.Empty;
+        string title;
+        string description;
 
         switch (sectionName.ToLower())
         {
@@ -75,28 +80,54 @@ public class DictionaryKeySeeder
                 break;
         }
 
-        CreateKey(string.Format(Translations.PreferencesModal.Sections.Title, sectionName), title, parentKey);
-        CreateKey(string.Format(Translations.PreferencesModal.Sections.Description, sectionName), description, parentKey);
+        await CreateKeyAsync(string.Format(Translations.PreferencesModal.Sections.Title, sectionName), title, parentKey);
+        await CreateKeyAsync(string.Format(Translations.PreferencesModal.Sections.Description, sectionName), description, parentKey);
     }
 
-    private Guid? CreateKey(string key, string value, Guid? parentKey = null)
+    private async Task<Guid?> CreateKeyAsync(string key, string value, Guid? parentKey = null)
     {
         try
         {
-            var existingItem = _localizationService.GetDictionaryItemByKey(key);
-            if (existingItem == null)
+            var existingItem = await _dictionaryItemService.GetAsync(key);
+            if (existingItem != null)
             {
-                var dict = _localizationService.CreateDictionaryItemWithIdentity(key, parentId: parentKey, value);
-                _logger.LogInformation($"Created translation key: {key}");
-                return dict?.Key;
+                _logger.LogInformation("Key already exists: {DictionaryKey}", key);
+                return existingItem.Key;
             }
-            _logger.LogInformation($"Key already exists: {key}");
-            return existingItem?.Key;
+
+            var dictionaryItem = new DictionaryItem(parentKey, key)
+            {
+                Translations = await BuildTranslationsAsync(value)
+            };
+
+            var attempt = await _dictionaryItemService.CreateAsync(dictionaryItem, Constants.Security.SuperUserKey);
+            if (attempt.Success == false)
+            {
+                _logger.LogWarning("Could not create translation key {DictionaryKey}: {Status}", key, attempt.Status);
+                return null;
+            }
+
+            _logger.LogInformation("Created translation key: {DictionaryKey}", key);
+            return attempt.Result?.Key;
         }
         catch (Exception ex)
         {
-            _logger.LogError($"Error creating key {key}: {ex.Message}");
+            _logger.LogError(ex, "Error creating key {DictionaryKey}", key);
             return null;
         }
+    }
+
+    /// <summary>
+    /// The seeded wording is English, so it is only assigned to the default language and left
+    /// for editors to fill in for the others
+    /// </summary>
+    private async Task<List<IDictionaryTranslation>> BuildTranslationsAsync(string value)
+    {
+        var defaultIsoCode = await _languageService.GetDefaultIsoCodeAsync();
+        var language = await _languageService.GetAsync(defaultIsoCode);
+
+        return language is null
+            ? new List<IDictionaryTranslation>()
+            : new List<IDictionaryTranslation> { new DictionaryTranslation(language, value) };
     }
 }

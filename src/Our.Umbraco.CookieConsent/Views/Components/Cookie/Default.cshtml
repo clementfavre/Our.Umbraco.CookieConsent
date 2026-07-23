@@ -5,25 +5,25 @@
 @inject ICookieConsentService CookieConsentService
 @inject UmbracoHelper UmbracoHelper
 @{
-    CookieConsentSettingsModel cookieSettings = CookieConsentService.GetSettings();
+    CookieConsentSettingsModel cookieSettings = await CookieConsentService.GetSettingsAsync();
 
     var categories = new List<dynamic>();
-    foreach (var category in cookieSettings.ApplicableCategories?.GetAll() ?? Enumerable.Empty<(string Name, bool Enabled, bool ReadOnly)>())
+    foreach (var (name, category) in cookieSettings.ApplicableCategories?.GetAll() ?? Enumerable.Empty<(string Name, CookieCategoryModel Category)>())
     {
         if (!category.Enabled)
             continue;
 
         var sectionTitle = UmbracoHelper.GetDictionaryValue(
-            string.Format(Translations.PreferencesModal.Sections.Title, category.Name)
+            string.Format(Translations.PreferencesModal.Sections.Title, name)
         );
         var sectionDescr = UmbracoHelper.GetDictionaryValue(
-            string.Format(Translations.PreferencesModal.Sections.Description, category.Name)
+            string.Format(Translations.PreferencesModal.Sections.Description, name)
         );
 
         categories.Add(new
         {
-            Name = category.Name,
-            LowerName = category.Name.ToLower(),
+            Name = name,
+            LowerName = name.ToLower(),
             Title = sectionTitle,
             Description = sectionDescr,
             IsReadOnly = category.ReadOnly.ToString().ToLower()
@@ -34,6 +34,8 @@
     .FirstOrDefault(b => string.Equals(b.Provider?.Trim(), "GoogleConsentMode", StringComparison.OrdinalIgnoreCase));
 
     bool isGoogleConsentModeActivated = googleConsentModeScript != null;
+    var googleConsentModeId = googleConsentModeScript?.Id;
+    var customScripts = cookieSettings.CustomScripts ?? new List<ScriptOptionsModel>();
 }
 @if (cookieSettings is not null)
 {
@@ -54,10 +56,10 @@
             const SERVICE_PERSONALIZATION_STORAGE = 'personalization_storage';
             const SERVICE_SECURITY_STORAGE = 'security_storage';
 
-            @if (isGoogleConsentModeActivated && !string.IsNullOrWhiteSpace(googleConsentModeScript.Id)) {
+            @if (isGoogleConsentModeActivated && !string.IsNullOrWhiteSpace(googleConsentModeId)) {
                 <text>
                 const gtagScript = document.createElement('script');
-                gtagScript.src = 'https://www.googletagmanager.com/gtag/js?id=@googleConsentModeScript.Id';
+                gtagScript.src = 'https://www.googletagmanager.com/gtag/js?id=@googleConsentModeId';
                 gtagScript.async = true;
                 document.head.appendChild(gtagScript);
 
@@ -206,9 +208,9 @@
             });
 
             function runScripts() {
-                @if(cookieSettings.CustomScripts != null && cookieSettings.CustomScripts.Any())
+                @if(customScripts.Any())
                 {
-                    @foreach (var script in cookieSettings.CustomScripts)
+                    @foreach (var script in customScripts)
                     {
                         var cat = script.Type.ToString().ToLowerInvariant();
                         if (!string.IsNullOrWhiteSpace(script.Code))

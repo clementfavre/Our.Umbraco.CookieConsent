@@ -1,10 +1,19 @@
-﻿using Newtonsoft.Json;
+using System.Text.Json;
 using Our.Umbraco.CookieConsent.Models;
 
 namespace Our.Umbraco.CookieConsent;
 
 public static class CookieConsentMapper
 {
+    /// <summary>
+    /// The stored JSON was written with PascalCase property names, so reading is case insensitive
+    /// to accept both what this version writes and what the Umbraco 13 version left behind
+    /// </summary>
+    internal static readonly JsonSerializerOptions SerializerOptions = new()
+    {
+        PropertyNameCaseInsensitive = true
+    };
+
     public static CookieConsentSettingsModel? MapToCookieModel(CookieConsentSettingsSqlModel? sqlModel)
     {
         if (sqlModel == null || string.IsNullOrWhiteSpace(sqlModel.SettingsJson))
@@ -12,7 +21,7 @@ public static class CookieConsentMapper
 
         try
         {
-            return JsonConvert.DeserializeObject<CookieConsentSettingsModel>(sqlModel.SettingsJson);
+            return JsonSerializer.Deserialize<CookieConsentSettingsModel>(sqlModel.SettingsJson, SerializerOptions);
         }
         catch (JsonException ex)
         {
@@ -29,7 +38,7 @@ public static class CookieConsentMapper
         {
             return new CookieConsentSettingsSqlModel
             {
-                SettingsJson = JsonConvert.SerializeObject(domainModel),
+                SettingsJson = JsonSerializer.Serialize(domainModel, SerializerOptions),
                 LastUpdated = DateTime.UtcNow
             };
         }

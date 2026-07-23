@@ -1,6 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk.Razor">
   <PropertyGroup>
-    <TargetFramework>net8.0</TargetFramework>
+    <TargetFramework>net10.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <StaticWebAssetBasePath>/</StaticWebAssetBasePath>
@@ -10,7 +10,7 @@
   </PropertyGroup>
   <PropertyGroup>
     <PackageId>Our.Umbraco.CookieConsent</PackageId>
-    <Version>0.0.4</Version>
+    <Version>17.0.0</Version>
     <Product>Our.Umbraco.CookieConsent - Cookie Management for Umbraco</Product>
     <Title>Our.Umbraco.CookieConsent</Title>
     <Description>Our.Umbraco.CookieConsent: A Umbraco package for adding a customizable cookie consent banner to your Umbraco site. Powered by the Orestbida/CookieConsent library.</Description>
@@ -26,8 +26,8 @@
     <PackageIcon>OurUmbracoCookieConsent.png</PackageIcon>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Umbraco.Cms.Web.Website" Version="13.0.0" />
-    <PackageReference Include="Umbraco.Cms.Web.BackOffice" Version="13.0.0" />
+    <PackageReference Include="Umbraco.Cms.Web.Website" Version="17.0.0" />
+    <PackageReference Include="Umbraco.Cms.Api.Management" Version="17.0.0" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\OurUmbracoCookieConsent.png">

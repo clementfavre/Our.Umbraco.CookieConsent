@@ -8,7 +8,7 @@ namespace Our.Umbraco.CookieConsent.Services;
 /// <summary>
 /// Seeds the dictionary keys once Umbraco is fully started
 /// </summary>
-public class DictionaryKeySeederNotificationHandler : INotificationHandler<UmbracoApplicationStartedNotification>
+public class DictionaryKeySeederNotificationHandler : INotificationAsyncHandler<UmbracoApplicationStartedNotification>
 {
     private readonly DictionaryKeySeeder _dictionaryKeySeeder;
     private readonly IRuntimeState _runtimeState;
@@ -19,11 +19,11 @@ public class DictionaryKeySeederNotificationHandler : INotificationHandler<Umbra
         _runtimeState = runtimeState;
     }
 
-    public void Handle(UmbracoApplicationStartedNotification notification)
+    public async Task HandleAsync(UmbracoApplicationStartedNotification notification, CancellationToken cancellationToken)
     {
         if (_runtimeState.Level < RuntimeLevel.Run)
             return;
 
-        _dictionaryKeySeeder.CreateBaseKeys();
+        await _dictionaryKeySeeder.CreateBaseKeysAsync();
     }
 }

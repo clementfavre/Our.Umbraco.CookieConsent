@@ -1,12 +1,33 @@
-﻿namespace Our.Umbraco.CookieConsent.Models;
+using System.Text.Json.Serialization;
+
+namespace Our.Umbraco.CookieConsent.Models;
 
 public class LanguageOptionsModel
 {
-    public string DefaultLanguage { get; set; }
+    public string DefaultLanguage { get; set; } = "en";
     public bool AutoDectect { get; set; }
     public LanguageDetectionMethod DetectionMethod { get; set; }
 }
 
+/// <summary>
+/// A language configured in Umbraco, offered as a fallback in the dashboard
+/// </summary>
+public class LanguageOptionModel
+{
+    public LanguageOptionModel()
+    {}
+
+    public LanguageOptionModel(string value, string displayName)
+    {
+        Value = value;
+        DisplayName = displayName;
+    }
+
+    public string Value { get; set; } = string.Empty;
+    public string DisplayName { get; set; } = string.Empty;
+}
+
+[JsonConverter(typeof(JsonStringEnumConverter))]
 public enum LanguageDetectionMethod
 {
     Browser,

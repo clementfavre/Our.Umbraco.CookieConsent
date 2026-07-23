@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 
 namespace Our.Umbraco.CookieConsent.Models;
 
@@ -10,6 +11,7 @@ public class GuiOptionsModel
     public PreferencesModalPosition PreferencesModalPosition { get; set; }
 }
 
+[JsonConverter(typeof(JsonStringEnumConverter))]
 public enum ConsentModalLayout
 {
     [Display(Name = "box")]
@@ -28,6 +30,7 @@ public enum ConsentModalLayout
     BarInline
 }
 
+[JsonConverter(typeof(JsonStringEnumConverter))]
 public enum PreferencesModalLayout
 {
     [Display(Name = "box")]
@@ -38,6 +41,7 @@ public enum PreferencesModalLayout
     BarWide
 }
 
+[JsonConverter(typeof(JsonStringEnumConverter))]
 public enum ConsentModalPosition
 {
     [Display(Name = "top left")]
@@ -60,6 +64,7 @@ public enum ConsentModalPosition
     BottomRight
 }
 
+[JsonConverter(typeof(JsonStringEnumConverter))]
 public enum PreferencesModalPosition
 {
     [Display(Name = "left")]

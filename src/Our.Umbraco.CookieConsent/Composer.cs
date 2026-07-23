@@ -1,6 +1,8 @@
 using Microsoft.Extensions.DependencyInjection;
+using Our.Umbraco.CookieConsent.Controllers;
 using Our.Umbraco.CookieConsent.Interfaces;
 using Our.Umbraco.CookieConsent.Services;
+using Swashbuckle.AspNetCore.SwaggerGen;
 using Umbraco.Cms.Core.Composing;
 using Umbraco.Cms.Core.DependencyInjection;
 using Umbraco.Cms.Core.Notifications;
@@ -14,7 +16,7 @@ public class Composer : IComposer
         builder.Services.AddScoped<ICookieConsentService, CookieConsentService>();
         builder.Services.AddTransient<DictionaryKeySeeder>();
         builder.AddComponent<CookieConsentComponent>();
-        builder.AddDashboard<CookieConsentDashboard>();
-        builder.AddNotificationHandler<UmbracoApplicationStartedNotification, DictionaryKeySeederNotificationHandler>();
+        builder.AddNotificationAsyncHandler<UmbracoApplicationStartedNotification, DictionaryKeySeederNotificationHandler>();
+        builder.Services.Configure<SwaggerGenOptions>(CookieConsentApiConfiguration.Configure);
     }
 }

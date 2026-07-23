@@ -8,8 +8,9 @@ Easily add a configurable cookie consent banner to your Umbraco site. Features i
 
 ## Requirements
 
-Umbraco 13 on .NET 8  
-Umbraco 17 on .NET 10 in progress (release 23-24 July 2026)
+Umbraco 17 on .NET 10
+
+Umbraco 13 on .NET 8 is supported by the `0.0.x` releases, built from the `master` branch.
 
 ## Installation
 
@@ -28,7 +29,7 @@ The settings table is created on the first startup, and the dashboard shows the 
 ## Configuration
 
 1. **Access the dashboard**  
-Navigate to the Settings tab in the Umbraco Backoffice, and then select the Cookie Consent dashboard to manage all settings related to your banner.
+Navigate to the Settings section in the Umbraco Backoffice, and then select the Cookie Consent dashboard to manage all settings related to your banner.
 
 2. **Customize appearance and behavior**  
    Use the dashboard to configure:  

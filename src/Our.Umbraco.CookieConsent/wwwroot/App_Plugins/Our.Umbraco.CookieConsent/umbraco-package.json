@@ -1,0 +1,25 @@
+{
+  "$schema": "../../umbraco-package-schema.json",
+  "name": "Our.Umbraco.CookieConsent",
+  "version": "17.0.0",
+  "extensions": [
+    {
+      "type": "dashboard",
+      "alias": "Our.Umbraco.CookieConsent.Dashboard",
+      "name": "Cookie Consent Dashboard",
+      "element": "/App_Plugins/Our.Umbraco.CookieConsent/cookie-consent-dashboard.js",
+      "elementName": "cookie-consent-dashboard",
+      "weight": 11,
+      "meta": {
+        "label": "Cookie Consent 🍪",
+        "pathname": "cookie-consent"
+      },
+      "conditions": [
+        {
+          "alias": "Umb.Condition.SectionAlias",
+          "match": "Umb.Section.Settings"
+        }
+      ]
+    }
+  ]
+}

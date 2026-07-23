@@ -32,7 +32,7 @@ jobs:
 
       - uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: '8.0.x'
+          dotnet-version: '10.0.x'
 
       - name: Restore
         run: dotnet restore ${{ env.PROJECT }}
@@ -50,12 +50,9 @@ jobs:
           unzip -l "$PKG" | tee listing.txt
 
           REQUIRED="
-          lib/net8.0/Our.Umbraco.CookieConsent.dll
-          staticwebassets/App_Plugins/Our.Umbraco.CookieConsent/package.manifest
-          staticwebassets/App_Plugins/Our.Umbraco.CookieConsent/CookieConsentDashboard.html
-          staticwebassets/App_Plugins/Our.Umbraco.CookieConsent/CookieConsentDashboard.controller.js
-          staticwebassets/App_Plugins/Our.Umbraco.CookieConsent/CookieConsentDashboard.css
-          staticwebassets/App_Plugins/Our.Umbraco.CookieConsent/Lang/en-US.xml
+          lib/net10.0/Our.Umbraco.CookieConsent.dll
+          staticwebassets/App_Plugins/Our.Umbraco.CookieConsent/umbraco-package.json
+          staticwebassets/App_Plugins/Our.Umbraco.CookieConsent/cookie-consent-dashboard.js
           staticwebassets/libraries/cookieconsent-orestbida/cookieconsent.umd.min.js
           staticwebassets/libraries/cookieconsent-orestbida/cookieconsent.min.css
           "

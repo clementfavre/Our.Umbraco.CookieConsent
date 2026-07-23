@@ -1,4 +1,4 @@
-﻿using Umbraco.Cms.Core;
+using Umbraco.Cms.Core;
 using Umbraco.Cms.Core.Composing;
 using Umbraco.Cms.Core.Migrations;
 using Umbraco.Cms.Core.Scoping;
@@ -8,7 +8,7 @@ using Umbraco.Cms.Infrastructure.Migrations.Upgrade;
 
 namespace Our.Umbraco.CookieConsent
 {
-    public class CookieConsentComponent : IComponent
+    public class CookieConsentComponent : IAsyncComponent
     {
         private readonly ICoreScopeProvider _coreScopeProvider;
         private readonly IMigrationPlanExecutor _migrationPlanExecutor;
@@ -27,7 +27,7 @@ namespace Our.Umbraco.CookieConsent
             _runtimeState = runtimeState;
         }
 
-        public void Initialize()
+        public async Task InitializeAsync(bool isRestarting, CancellationToken cancellationToken)
         {
             if (_runtimeState.Level < RuntimeLevel.Run)
                 return;
@@ -37,10 +37,10 @@ namespace Our.Umbraco.CookieConsent
                 .To<CookieConsentSettingsTable>("cookieconsentsettings-db");
 
             var upgrader = new Upgrader(migrationPlan);
-            upgrader.Execute(_migrationPlanExecutor, _coreScopeProvider, _keyValueService);
+            await upgrader.ExecuteAsync(_migrationPlanExecutor, _coreScopeProvider, _keyValueService);
         }
 
-        public void Terminate()
-        {}
+        public Task TerminateAsync(bool isRestarting, CancellationToken cancellationToken)
+            => Task.CompletedTask;
     }
 }

@@ -1,17 +1,17 @@
-﻿using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging;
 using NPoco;
 using Umbraco.Cms.Infrastructure.Migrations;
 using Umbraco.Cms.Infrastructure.Persistence.DatabaseAnnotations;
 
 namespace Our.Umbraco.CookieConsent
 {
-    //doc: https://docs.umbraco.com/umbraco-cms/13.latest/extending/database
-    public class CookieConsentSettingsTable : MigrationBase
+    //doc: https://docs.umbraco.com/umbraco-cms/customizing/development-workflow/extending-database
+    public class CookieConsentSettingsTable : AsyncMigrationBase
     {
         public CookieConsentSettingsTable(IMigrationContext context) : base(context)
         {}
 
-        protected override void Migrate()
+        protected override Task MigrateAsync()
         {
             Logger.LogDebug("Running migration {MigrationStep}", "CookieConsentSettingsTable ");
 
@@ -19,6 +19,8 @@ namespace Our.Umbraco.CookieConsent
                 Create.Table<CookieConsentSettingsSchema>().Do();
             else
                 Logger.LogDebug("The database table {DbTable} already exists, skipping", "CookieConsentSettings");
+
+            return Task.CompletedTask;
         }
     }
 
@@ -33,7 +35,7 @@ namespace Our.Umbraco.CookieConsent
 
         [Column("SettingsJson")]
         [SpecialDbType(SpecialDbTypes.NVARCHARMAX)]
-        public string SettingsJson { get; set; }
+        public string SettingsJson { get; set; } = string.Empty;
 
         [Column("LastUpdated")]
         [Constraint(Default = "GETDATE()")]

@@ -1,12 +1,12 @@
+using System.Text.Json;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
 using NPoco;
-using Umbraco.Cms.Core.Cache;
-using Umbraco.Extensions;
 using Our.Umbraco.CookieConsent.Interfaces;
 using Our.Umbraco.CookieConsent.Models;
+using Umbraco.Cms.Core.Cache;
 using Umbraco.Cms.Core.Services;
 using Umbraco.Cms.Infrastructure.Scoping;
+using Umbraco.Extensions;
 
 namespace Our.Umbraco.CookieConsent.Services
 {
@@ -14,7 +14,7 @@ namespace Our.Umbraco.CookieConsent.Services
     {
         private readonly IScopeProvider _scopeProvider;
         private readonly ILogger<CookieConsentService> _logger;
-        private readonly ILocalizationService _localizationService;
+        private readonly ILanguageService _languageService;
         private readonly DictionaryKeySeeder _dictionaryKeySeeder;
         private readonly AppCaches _appCaches;
 
@@ -22,14 +22,14 @@ namespace Our.Umbraco.CookieConsent.Services
         private const string SettingsCacheKey = "Our.Umbraco.CookieConsent.Settings";
         private static readonly TimeSpan SettingsCacheDuration = TimeSpan.FromMinutes(5);
 
-        private const string DefaultSettingsSql = @"SELECT TOP(1) 
+        private const string DefaultSettingsSql = @"SELECT TOP(1)
                                 [Id],
                                 [SettingsJson],
                                 [LastUpdated]
                              FROM [CookieConsentSettings]
                              ORDER BY [LastUpdated] DESC";
 
-        private const string DefaultSettingsSqlLite = @"SELECT 
+        private const string DefaultSettingsSqlLite = @"SELECT
                                 [Id],
                                 [SettingsJson],
                                 [LastUpdated]
@@ -45,32 +45,38 @@ namespace Our.Umbraco.CookieConsent.Services
 
         public CookieConsentService(IScopeProvider scopeProvider,
             ILogger<CookieConsentService> logger,
-            ILocalizationService localizationService,
+            ILanguageService languageService,
             DictionaryKeySeeder dictionaryKeySeeder,
             AppCaches appCaches)
         {
             _scopeProvider = scopeProvider;
             _logger = logger;
-            _localizationService = localizationService;
+            _languageService = languageService;
             _dictionaryKeySeeder = dictionaryKeySeeder;
             _appCaches = appCaches;
         }
 
-        public CookieConsentSettingsModel GetSettings()
+        public async Task<CookieConsentSettingsModel> GetSettingsAsync()
         {
             try
             {
-                return _appCaches.RuntimeCache.GetCacheItem(SettingsCacheKey, LoadSettings, SettingsCacheDuration)
-                       ?? GetDefaultSettings();
+                var cached = _appCaches.RuntimeCache.GetCacheItem<CookieConsentSettingsModel>(SettingsCacheKey);
+                if (cached is not null)
+                    return cached;
+
+                var settings = await LoadSettingsAsync();
+                _appCaches.RuntimeCache.InsertCacheItem(SettingsCacheKey, () => settings, SettingsCacheDuration);
+
+                return settings;
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Unexpected error while fetching cookie consent settings.");
-                return GetDefaultSettings();
+                return await GetDefaultSettingsAsync();
             }
         }
 
-        private CookieConsentSettingsModel LoadSettings()
+        private async Task<CookieConsentSettingsModel> LoadSettingsAsync()
         {
             CookieConsentSettingsSqlModel? sqlSettings;
 
@@ -87,13 +93,13 @@ namespace Our.Umbraco.CookieConsent.Services
             // Nothing stored yet (fresh install): fall back to the defaults instead of failing
             var settings = CookieConsentMapper.MapToCookieModel(sqlSettings);
             if (settings == null)
-                return GetDefaultSettings();
+                return await GetDefaultSettingsAsync();
 
-            settings.AvailableLanguages = GetAvailableLanguages();
+            settings.AvailableLanguages = await GetAvailableLanguagesAsync();
             return settings;
         }
 
-        public void SaveSettings(CookieConsentSettingsModel settings)
+        public async Task SaveSettingsAsync(CookieConsentSettingsModel settings)
         {
             if (settings == null)
             {
@@ -104,10 +110,10 @@ namespace Our.Umbraco.CookieConsent.Services
             if (settings.ApplicableCategories != null)
             {
                 // delete unused categories?
-                foreach (var category in settings.ApplicableCategories.GetAll())
+                foreach (var (name, category) in settings.ApplicableCategories.GetAll())
                 {
                     if (category.Enabled)
-                        _dictionaryKeySeeder.CreateSection(category.Name);
+                        await _dictionaryKeySeeder.CreateSectionAsync(name);
                 }
             }
 
@@ -123,13 +129,14 @@ namespace Our.Umbraco.CookieConsent.Services
             }
         }
 
-        public void ResetSettings()
+        public async Task<CookieConsentSettingsModel> ResetSettingsAsync()
         {
-            var settings = GetDefaultSettings();
+            var settings = await GetDefaultSettingsAsync();
             try
             {
                 PersistSettings(settings);
                 _logger.LogInformation("Cookie consent settings reset successfully.");
+                return settings;
             }
             catch (Exception ex)
             {
@@ -145,7 +152,7 @@ namespace Our.Umbraco.CookieConsent.Services
         {
             using var scope = _scopeProvider.CreateScope();
 
-            var settingsJson = JsonConvert.SerializeObject(settings);
+            var settingsJson = JsonSerializer.Serialize(settings, CookieConsentMapper.SerializerOptions);
 
             scope.Database.Execute(DeleteSettingsSql);
             scope.Database.Execute(InsertSettingsSql, new
@@ -159,24 +166,27 @@ namespace Our.Umbraco.CookieConsent.Services
             _appCaches.RuntimeCache.Clear(SettingsCacheKey);
         }
 
-        private List<(string Value, string DisplayName)> GetAvailableLanguages()
-            => _localizationService.GetAllLanguages()
-                .Select(x => (Value: x.CultureInfo.TwoLetterISOLanguageName, DisplayName: x.CultureName))
+        private async Task<List<LanguageOptionModel>> GetAvailableLanguagesAsync()
+        {
+            var languages = await _languageService.GetAllAsync();
+            return languages
+                .Select(x => new LanguageOptionModel(x.IsoCode.Split('-')[0], x.CultureName))
                 .ToList();
+        }
 
-        private CookieConsentSettingsModel GetDefaultSettings()
+        private async Task<CookieConsentSettingsModel> GetDefaultSettingsAsync()
         {
             return new CookieConsentSettingsModel
             {
-                ApplicableCategories = new CookieCategoriesModel()
+                ApplicableCategories = new CookieCategoriesModel
                 {
-                    Necessary = (true, true),
-                    Functionality = (true, true),
-                    Analytics = (false, false),
-                    Marketing = (true, false)
+                    Necessary = new CookieCategoryModel(enabled: true, readOnly: true),
+                    Functionality = new CookieCategoryModel(enabled: true, readOnly: true),
+                    Analytics = new CookieCategoryModel(enabled: false, readOnly: false),
+                    Marketing = new CookieCategoryModel(enabled: true, readOnly: false)
                 },
-                AvailableLanguages = GetAvailableLanguages(),
-                LanguageOptions = new LanguageOptionsModel()
+                AvailableLanguages = await GetAvailableLanguagesAsync(),
+                LanguageOptions = new LanguageOptionsModel
                 {
                     AutoDectect = true,
                     DefaultLanguage = "en",
@@ -196,8 +206,8 @@ namespace Our.Umbraco.CookieConsent.Services
                     DisableTransitions = false,
                     DisablePageInteraction = false
                 },
-                CustomScripts = new (),
-                BuiltInScripts = new ()
+                CustomScripts = new(),
+                BuiltInScripts = new()
             };
         }
     }
