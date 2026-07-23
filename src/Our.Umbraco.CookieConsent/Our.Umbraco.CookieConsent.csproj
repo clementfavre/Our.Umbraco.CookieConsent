@@ -25,6 +25,10 @@
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <PackageIcon>OurUmbracoCookieConsent.png</PackageIcon>
   </PropertyGroup>
+  <!-- Ignore vulnerabilities from transient dependencies -->
+  <PropertyGroup>
+    <NuGetAuditMode>direct</NuGetAuditMode>
+  </PropertyGroup>
   <ItemGroup>
     <!-- Umbraco 14 dropped the APIs this package builds on, so the range keeps it off 14 and up -->
     <PackageReference Include="Umbraco.Cms.Web.Website" Version="[13.0.0, 14.0.0)" />
