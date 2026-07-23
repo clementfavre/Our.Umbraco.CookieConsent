@@ -26,8 +26,9 @@
     <PackageIcon>OurUmbracoCookieConsent.png</PackageIcon>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Umbraco.Cms.Web.Website" Version="13.0.0" />
-    <PackageReference Include="Umbraco.Cms.Web.BackOffice" Version="13.0.0" />
+    <!-- Umbraco 14 dropped the APIs this package builds on, so the range keeps it off 14 and up -->
+    <PackageReference Include="Umbraco.Cms.Web.Website" Version="[13.0.0, 14.0.0)" />
+    <PackageReference Include="Umbraco.Cms.Web.BackOffice" Version="[13.0.0, 14.0.0)" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\OurUmbracoCookieConsent.png">
