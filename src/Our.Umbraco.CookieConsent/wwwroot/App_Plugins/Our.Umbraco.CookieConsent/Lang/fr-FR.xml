@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<language>
+  <area alias="dashboardTabs">
+    <key alias="Our.Umbraco.CookieConsent">Réglages Cookie Consent 🍪</key>
+  </area>
+  <area alias="cookieConsent">
+    <!-- Categories -->
+    <key alias="categoriesTitle">Catégories de cookies</key>
+    <key alias="categoriesDescription">Choisissez les catégories affichées dans le bandeau, et si les visiteurs peuvent les modifier.</key>
+    <key alias="categoryNecessary">Strictement nécessaires</key>
+    <key alias="categoryNecessaryDescription">Nécessaires au fonctionnement du site ; les visiteurs ne sont jamais interrogés à leur sujet.</key>
+    <key alias="categoryFunctionality">Fonctionnalités</key>
+    <key alias="categoryFunctionalityDescription">Mémorisent des choix comme la langue ou la région.</key>
+    <key alias="categoryAnalytics">Mesure d'audience</key>
+    <key alias="categoryAnalyticsDescription">Mesurent la façon dont les visiteurs parcourent le site.</key>
+    <key alias="categoryMarketing">Marketing</key>
+    <key alias="categoryMarketingDescription">Servent à afficher de la publicité selon les habitudes de navigation.</key>
+    <key alias="shownInBanner">Affichée dans le bandeau</key>
+    <key alias="hidden">Masquée</key>
+    <key alias="alwaysOn">Toujours active, refus impossible</key>
+    <key alias="visitorsDecide">Au choix du visiteur</key>
+
+    <!-- Language -->
+    <key alias="languageTitle">Langue</key>
+    <key alias="languageDescription">Le bandeau suit la langue du visiteur lorsqu'elle peut être détectée.</key>
+    <key alias="fallbackLanguage">Langue de repli</key>
+    <key alias="fallbackLanguageDescription">Utilisée lorsque la langue du visiteur n'est pas disponible.</key>
+    <key alias="languageHint"><![CDATA[Les choix proposés ici sont les langues configurées dans Umbraco. Les textes comme le titre du bandeau se gèrent dans le <a href="/umbraco#/translation/dictionary/list">Dictionnaire</a>, sous la clé <code>Our.Umbraco.CookieConsent</code>.]]></key>
+
+    <!-- Appearance -->
+    <key alias="appearanceTitle">Apparence</key>
+    <key alias="appearanceDescription">L'emplacement et l'aspect des deux fenêtres.</key>
+    <key alias="bannerLayout">Disposition du bandeau</key>
+    <key alias="bannerLayoutDescription">La première fenêtre que voit le visiteur.</key>
+    <key alias="bannerPosition">Position du bandeau</key>
+    <key alias="preferencesLayout">Disposition des préférences</key>
+    <key alias="preferencesLayoutDescription">La fenêtre ouverte depuis « Gérer les préférences ».</key>
+    <key alias="preferencesPosition">Position des préférences</key>
+    <key alias="theme">Thème</key>
+    <key alias="themeLight">Clair</key>
+    <key alias="themeDark">Sombre</key>
+    <key alias="followDarkMode">Suivre le mode sombre du visiteur</key>
+    <key alias="followDarkModeDescription">Bascule sur le thème sombre lorsque le système du visiteur le demande.</key>
+    <key alias="disableTransitions">Désactiver les animations</key>
+    <key alias="disableTransitionsDescription">Affiche les fenêtres sans fondu ni glissement.</key>
+    <key alias="disablePageInteraction">Bloquer la page jusqu'au choix</key>
+    <key alias="disablePageInteractionDescription">Assombrit le site et empêche la navigation tant que le visiteur n'a pas répondu.</key>
+
+    <!-- Layouts, named after the Orestbida library so the docs stay readable -->
+    <key alias="layoutBox">Box</key>
+    <key alias="layoutBoxInline">Box, boutons alignés</key>
+    <key alias="layoutBoxWide">Box large</key>
+    <key alias="layoutCloud">Cloud</key>
+    <key alias="layoutCloudInline">Cloud, boutons alignés</key>
+    <key alias="layoutBar">Bar</key>
+    <key alias="layoutBarInline">Bar, boutons alignés</key>
+    <key alias="layoutBarWide">Bar large</key>
+
+    <!-- Positions -->
+    <key alias="positionTopLeft">En haut à gauche</key>
+    <key alias="positionTopCenter">En haut au centre</key>
+    <key alias="positionTopRight">En haut à droite</key>
+    <key alias="positionMiddleLeft">Au milieu à gauche</key>
+    <key alias="positionMiddleCenter">Au milieu au centre</key>
+    <key alias="positionMiddleRight">Au milieu à droite</key>
+    <key alias="positionBottomLeft">En bas à gauche</key>
+    <key alias="positionBottomCenter">En bas au centre</key>
+    <key alias="positionBottomRight">En bas à droite</key>
+    <key alias="positionLeft">À gauche</key>
+    <key alias="positionRight">À droite</key>
+
+    <!-- Built-in scripts -->
+    <key alias="builtInScriptsTitle">Scripts intégrés</key>
+    <key alias="builtInScriptsDescription">Intégrations prêtes à l'emploi qui s'exécutent avant le consentement. Saisissez l'identifiant, le paquet s'occupe du reste.</key>
+    <key alias="provider">Fournisseur</key>
+    <key alias="providerGoogleConsentMode">Google Consent Mode</key>
+    <key alias="measurementId">Identifiant de mesure</key>
+    <key alias="noBuiltInScript">Aucun script intégré pour l'instant.</key>
+    <key alias="addBuiltInScript">Ajouter un script intégré</key>
+
+    <!-- Custom scripts -->
+    <key alias="customScriptsTitle">Scripts personnalisés</key>
+    <key alias="customScriptsDescription">Votre propre code de suivi, exécuté seulement après que le visiteur a accepté la catégorie correspondante.</key>
+    <key alias="customScriptsHint"><![CDATA[<strong>JavaScript uniquement.</strong> Le code s'exécute à l'intérieur d'une fonction : une balise <code>&lt;script&gt;</code> le casserait. Pour charger un fichier externe, créez l'élément vous-même :]]></key>
+    <key alias="runsAfterAccept">S'exécute après acceptation de</key>
+    <key alias="code">Code</key>
+    <key alias="noCustomScript">Aucun script personnalisé pour l'instant.</key>
+    <key alias="addScript">Ajouter un script</key>
+
+    <!-- Shared -->
+    <key alias="remove">Supprimer</key>
+    <key alias="resetToDefaults">Rétablir les valeurs par défaut</key>
+    <key alias="save">Enregistrer</key>
+
+    <!-- Notifications -->
+    <key alias="error">Erreur</key>
+    <key alias="success">Succès</key>
+    <key alias="loadFailed">Échec du chargement des réglages.</key>
+    <key alias="saveSucceeded">Réglages enregistrés.</key>
+    <key alias="saveFailed">Échec de l'enregistrement des réglages.</key>
+    <key alias="resetSucceeded">Réglages rétablis aux valeurs par défaut.</key>
+    <key alias="resetFailed">Échec du rétablissement des réglages.</key>
+  </area>
+</language>

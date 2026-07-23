@@ -1,6 +1,104 @@
-﻿<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <language>
   <area alias="dashboardTabs">
     <key alias="Our.Umbraco.CookieConsent">Cookie Consent Settings 🍪</key>
+  </area>
+  <area alias="cookieConsent">
+    <!-- Categories -->
+    <key alias="categoriesTitle">Cookie categories</key>
+    <key alias="categoriesDescription">Pick the categories shown in the banner, and whether visitors can change them.</key>
+    <key alias="categoryNecessary">Strictly necessary</key>
+    <key alias="categoryNecessaryDescription">Needed for the site to work, so visitors are never asked about these.</key>
+    <key alias="categoryFunctionality">Functionality</key>
+    <key alias="categoryFunctionalityDescription">Remembers choices such as language or region.</key>
+    <key alias="categoryAnalytics">Analytics</key>
+    <key alias="categoryAnalyticsDescription">Measures how visitors browse the site.</key>
+    <key alias="categoryMarketing">Marketing</key>
+    <key alias="categoryMarketingDescription">Used to show advertising based on browsing habits.</key>
+    <key alias="shownInBanner">Shown in the banner</key>
+    <key alias="hidden">Hidden</key>
+    <key alias="alwaysOn">Always on, visitors cannot refuse</key>
+    <key alias="visitorsDecide">Visitors decide</key>
+
+    <!-- Language -->
+    <key alias="languageTitle">Language</key>
+    <key alias="languageDescription">The banner follows the visitor's language when it can be detected.</key>
+    <key alias="fallbackLanguage">Fallback language</key>
+    <key alias="fallbackLanguageDescription">Used when the visitor's language is not available.</key>
+    <key alias="languageHint"><![CDATA[The choices offered here are the languages configured in Umbraco. Wording such as the banner title lives in the <a href="/umbraco#/translation/dictionary/list">Dictionary</a>, under the <code>Our.Umbraco.CookieConsent</code> key.]]></key>
+
+    <!-- Appearance -->
+    <key alias="appearanceTitle">Appearance</key>
+    <key alias="appearanceDescription">Where the two dialogs sit and how they look.</key>
+    <key alias="bannerLayout">Banner layout</key>
+    <key alias="bannerLayoutDescription">The first dialog a visitor sees.</key>
+    <key alias="bannerPosition">Banner position</key>
+    <key alias="preferencesLayout">Preferences layout</key>
+    <key alias="preferencesLayoutDescription">The dialog opened from Manage preferences.</key>
+    <key alias="preferencesPosition">Preferences position</key>
+    <key alias="theme">Theme</key>
+    <key alias="themeLight">Light</key>
+    <key alias="themeDark">Dark</key>
+    <key alias="followDarkMode">Follow the visitor's dark mode</key>
+    <key alias="followDarkModeDescription">Switches to the dark theme when the visitor's system asks for it.</key>
+    <key alias="disableTransitions">Turn off animations</key>
+    <key alias="disableTransitionsDescription">Shows the dialogs without fading or sliding.</key>
+    <key alias="disablePageInteraction">Block the page until a choice is made</key>
+    <key alias="disablePageInteractionDescription">Dims the site and prevents browsing until the visitor answers.</key>
+
+    <!-- Layouts, named after the Orestbida library so the docs stay readable -->
+    <key alias="layoutBox">Box</key>
+    <key alias="layoutBoxInline">Box inline</key>
+    <key alias="layoutBoxWide">Box wide</key>
+    <key alias="layoutCloud">Cloud</key>
+    <key alias="layoutCloudInline">Cloud inline</key>
+    <key alias="layoutBar">Bar</key>
+    <key alias="layoutBarInline">Bar inline</key>
+    <key alias="layoutBarWide">Bar wide</key>
+
+    <!-- Positions -->
+    <key alias="positionTopLeft">Top left</key>
+    <key alias="positionTopCenter">Top center</key>
+    <key alias="positionTopRight">Top right</key>
+    <key alias="positionMiddleLeft">Middle left</key>
+    <key alias="positionMiddleCenter">Middle center</key>
+    <key alias="positionMiddleRight">Middle right</key>
+    <key alias="positionBottomLeft">Bottom left</key>
+    <key alias="positionBottomCenter">Bottom center</key>
+    <key alias="positionBottomRight">Bottom right</key>
+    <key alias="positionLeft">Left</key>
+    <key alias="positionRight">Right</key>
+
+    <!-- Built-in scripts -->
+    <key alias="builtInScriptsTitle">Built-in scripts</key>
+    <key alias="builtInScriptsDescription">Ready-made integrations that run before consent is given. Enter the ID and the package handles the rest.</key>
+    <key alias="provider">Provider</key>
+    <key alias="providerGoogleConsentMode">Google Consent Mode</key>
+    <key alias="measurementId">Measurement ID</key>
+    <key alias="noBuiltInScript">No built-in script yet.</key>
+    <key alias="addBuiltInScript">Add built-in script</key>
+
+    <!-- Custom scripts -->
+    <key alias="customScriptsTitle">Custom scripts</key>
+    <key alias="customScriptsDescription">Your own tracking code, run only once the visitor accepts the matching category.</key>
+    <key alias="customScriptsHint"><![CDATA[<strong>JavaScript only.</strong> The code runs inside a function, so a <code>&lt;script&gt;</code> tag would break it. Load an external file by creating the element yourself:]]></key>
+    <key alias="runsAfterAccept">Runs after the visitor accepts</key>
+    <key alias="code">Code</key>
+    <key alias="noCustomScript">No custom script yet.</key>
+    <key alias="addScript">Add script</key>
+
+    <!-- Shared -->
+    <key alias="remove">Remove</key>
+    <key alias="resetToDefaults">Reset to defaults</key>
+    <key alias="save">Save</key>
+
+    <!-- Notifications -->
+    <key alias="error">Error</key>
+    <key alias="success">Success</key>
+    <key alias="loadFailed">Failed to load settings.</key>
+    <key alias="saveSucceeded">Settings saved successfully.</key>
+    <key alias="saveFailed">Failed to save settings.</key>
+    <key alias="resetSucceeded">Settings reset to defaults.</key>
+    <key alias="resetFailed">Failed to reset settings.</key>
   </area>
 </language>

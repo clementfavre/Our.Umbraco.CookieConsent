@@ -1,84 +1,131 @@
 (function () {
     "use strict";
 
-    function controller($http, notificationsService) {
+    // Umbraco 13 has no localize filter, so every key is resolved up front and read from vm.t
+    var TEXT_KEYS = [
+        "categoriesTitle", "categoriesDescription",
+        "categoryNecessary", "categoryNecessaryDescription",
+        "categoryFunctionality", "categoryFunctionalityDescription",
+        "categoryAnalytics", "categoryAnalyticsDescription",
+        "categoryMarketing", "categoryMarketingDescription",
+        "shownInBanner", "hidden", "alwaysOn", "visitorsDecide",
+        "languageTitle", "languageDescription", "fallbackLanguage", "fallbackLanguageDescription", "languageHint",
+        "appearanceTitle", "appearanceDescription",
+        "bannerLayout", "bannerLayoutDescription", "bannerPosition",
+        "preferencesLayout", "preferencesLayoutDescription", "preferencesPosition",
+        "theme", "themeLight", "themeDark",
+        "followDarkMode", "followDarkModeDescription",
+        "disableTransitions", "disableTransitionsDescription",
+        "disablePageInteraction", "disablePageInteractionDescription",
+        "layoutBox", "layoutBoxInline", "layoutBoxWide", "layoutCloud", "layoutCloudInline",
+        "layoutBar", "layoutBarInline", "layoutBarWide",
+        "positionTopLeft", "positionTopCenter", "positionTopRight",
+        "positionMiddleLeft", "positionMiddleCenter", "positionMiddleRight",
+        "positionBottomLeft", "positionBottomCenter", "positionBottomRight",
+        "positionLeft", "positionRight",
+        "builtInScriptsTitle", "builtInScriptsDescription", "provider", "providerGoogleConsentMode",
+        "measurementId", "noBuiltInScript", "addBuiltInScript",
+        "customScriptsTitle", "customScriptsDescription", "customScriptsHint",
+        "runsAfterAccept", "code", "noCustomScript", "addScript",
+        "remove", "resetToDefaults", "save",
+        "error", "success", "loadFailed", "saveSucceeded", "saveFailed", "resetSucceeded", "resetFailed"
+    ];
+
+    function controller($http, notificationsService, localizationService) {
         var vm = this;
 
         vm.loading = true;
-        vm.scriptTypes = ["Necessary", "Functionality", "Analytics", "Marketing"];
+        vm.t = {};
 
         // The settings expose raw category keys, the dashboard shows editor-facing wording
-        vm.categories = {
-            necessary: {
-                name: "Strictly necessary",
-                description: "Needed for the site to work, so visitors are never asked about these."
-            },
-            functionality: {
-                name: "Functionality",
-                description: "Remembers choices such as language or region."
-            },
-            analytics: {
-                name: "Analytics",
-                description: "Measures how visitors browse the site."
-            },
-            marketing: {
-                name: "Marketing",
-                description: "Used to show advertising based on browsing habits."
-            }
+        vm.categoryTextKeys = {
+            necessary: "categoryNecessary",
+            functionality: "categoryFunctionality",
+            analytics: "categoryAnalytics",
+            marketing: "categoryMarketing"
         };
 
+        vm.scriptTypes = [
+            { value: "Necessary", textKey: "categoryNecessary" },
+            { value: "Functionality", textKey: "categoryFunctionality" },
+            { value: "Analytics", textKey: "categoryAnalytics" },
+            { value: "Marketing", textKey: "categoryMarketing" }
+        ];
+
         vm.categoryLabel = function (key) {
-            var category = vm.categories[String(key).toLowerCase()];
-            return category ? category.name : key;
+            var textKey = vm.categoryTextKeys[String(key).toLowerCase()];
+            return textKey ? vm.t[textKey] : key;
         };
 
         vm.categoryDescription = function (key) {
-            var category = vm.categories[String(key).toLowerCase()];
-            return category ? category.description : "";
+            var textKey = vm.categoryTextKeys[String(key).toLowerCase()];
+            return textKey ? vm.t[textKey + "Description"] : "";
         };
+
+        vm.text = function (textKey) {
+            return vm.t[textKey];
+        };
+
+        // value is the enum name the API expects, textKey is only what the editor reads.
+        // The raw Orestbida value is resolved server-side from the enum's Display attribute
         vm.enums = {
             consentModalLayouts: [
-                { value: 'Box', displayName: 'Box' },
-                { value: 'BoxInline', displayName: 'Box inline' },
-                { value: 'BoxWide', displayName: 'Box wide' },
-                { value: 'Cloud', displayName: 'Cloud' },
-                { value: 'CloudInline', displayName: 'Cloud inline' },
-                { value: 'Bar', displayName: 'Bar' },
-                { value: 'BarInline', displayName: 'Bar inline' }
+                { value: 'Box', textKey: 'layoutBox' },
+                { value: 'BoxInline', textKey: 'layoutBoxInline' },
+                { value: 'BoxWide', textKey: 'layoutBoxWide' },
+                { value: 'Cloud', textKey: 'layoutCloud' },
+                { value: 'CloudInline', textKey: 'layoutCloudInline' },
+                { value: 'Bar', textKey: 'layoutBar' },
+                { value: 'BarInline', textKey: 'layoutBarInline' }
             ],
             preferencesModalLayouts: [
-                { value: 'Box', displayName: 'Box' },
-                { value: 'Bar', displayName: 'Bar' },
-                { value: 'BarWide', displayName: 'Bar wide' }
+                { value: 'Box', textKey: 'layoutBox' },
+                { value: 'Bar', textKey: 'layoutBar' },
+                { value: 'BarWide', textKey: 'layoutBarWide' }
             ],
             consentModalPositions: [
-                { value: 'TopLeft', displayName: 'Top left' },
-                { value: 'TopCenter', displayName: 'Top center' },
-                { value: 'TopRight', displayName: 'Top right' },
-                { value: 'MiddleLeft', displayName: 'Middle left' },
-                { value: 'MiddleCenter', displayName: 'Middle center' },
-                { value: 'MiddleRight', displayName: 'Middle right' },
-                { value: 'BottomLeft', displayName: 'Bottom left' },
-                { value: 'BottomCenter', displayName: 'Bottom center' },
-                { value: 'BottomRight', displayName: 'Bottom right' }
+                { value: 'TopLeft', textKey: 'positionTopLeft' },
+                { value: 'TopCenter', textKey: 'positionTopCenter' },
+                { value: 'TopRight', textKey: 'positionTopRight' },
+                { value: 'MiddleLeft', textKey: 'positionMiddleLeft' },
+                { value: 'MiddleCenter', textKey: 'positionMiddleCenter' },
+                { value: 'MiddleRight', textKey: 'positionMiddleRight' },
+                { value: 'BottomLeft', textKey: 'positionBottomLeft' },
+                { value: 'BottomCenter', textKey: 'positionBottomCenter' },
+                { value: 'BottomRight', textKey: 'positionBottomRight' }
             ],
             preferencesModalPositions: [
-                { value: 'Left', displayName: 'Left' },
-                { value: 'Right', displayName: 'Right' }
+                { value: 'Left', textKey: 'positionLeft' },
+                { value: 'Right', textKey: 'positionRight' }
+            ],
+            themes: [
+                { value: 'light', textKey: 'themeLight' },
+                { value: 'dark', textKey: 'themeDark' }
+            ],
+            builtInScriptProviders: [
+                { value: 'GoogleConsentMode', textKey: 'providerGoogleConsentMode' }
             ]
         };
 
+        vm.loadTranslations = function () {
+            return localizationService.localizeMany(TEXT_KEYS.map(function (key) {
+                return "cookieConsent_" + key;
+            })).then(function (values) {
+                TEXT_KEYS.forEach(function (key, index) {
+                    vm.t[key] = values[index];
+                });
+            });
+        };
+
         vm.loadSettings = function () {
-            $http.get('backoffice/api/CookieConsent/GetSettings')
+            return $http.get('backoffice/api/CookieConsent/GetSettings')
                 .then(function (response) {
                     vm.settings = response.data;
                     vm.settings.customScripts = vm.settings.customScripts || [];
                     vm.settings.builtInScripts = vm.settings.builtInScripts || [];
-                    vm.loading = false;
                 })
                 .catch(function () {
-                    notificationsService.error("Error", "Failed to load settings.");
-                    vm.loading = false;
+                    notificationsService.error(vm.t.error, vm.t.loadFailed);
                 });
         };
 
@@ -86,11 +133,11 @@
             vm.loading = true;
             $http.post('backoffice/api/CookieConsent/SaveSettings', vm.settings)
                 .then(function () {
-                    notificationsService.success("Success", "Settings saved successfully.");
+                    notificationsService.success(vm.t.success, vm.t.saveSucceeded);
                     vm.loading = false;
                 })
                 .catch(function () {
-                    notificationsService.error("Error", "Failed to save settings.");
+                    notificationsService.error(vm.t.error, vm.t.saveFailed);
                     vm.loading = false;
                 });
         };
@@ -100,11 +147,11 @@
             $http.get('backoffice/api/CookieConsent/ResetSettings')
                 .then(function (response) {
                     vm.settings = response.data;
-                    notificationsService.success("Success", "Settings reset to defaults.");
+                    notificationsService.success(vm.t.success, vm.t.resetSucceeded);
                     vm.loading = false;
                 })
                 .catch(function () {
-                    notificationsService.error("Error", "Failed to reset settings.");
+                    notificationsService.error(vm.t.error, vm.t.resetFailed);
                     vm.loading = false;
                 });
         };
@@ -144,8 +191,15 @@
             vm.settings.builtInScripts.splice(index, 1);
         };
 
-        vm.loadSettings();
+        // The labels are needed before the first render, so the dashboard waits for both
+        vm.loadTranslations()
+            .then(vm.loadSettings)
+            .finally(function () {
+                vm.loading = false;
+            });
+
         return vm;
     }
-    angular.module("umbraco").controller("CookieConsentDashboard.Controller", ['$http', 'notificationsService', controller]);
+    angular.module("umbraco").controller("CookieConsentDashboard.Controller",
+        ['$http', 'notificationsService', 'localizationService', controller]);
 })();

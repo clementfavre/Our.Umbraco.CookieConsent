@@ -5,8 +5,8 @@
     <div ng-if="!vm.loading">
 
         <umb-box>
-            <umb-box-header title="Cookie categories"
-                            description="Pick the categories shown in the banner, and whether visitors can change them."></umb-box-header>
+            <umb-box-header title-key="cookieConsent_categoriesTitle"
+                            description-key="cookieConsent_categoriesDescription"></umb-box-header>
             <umb-box-content>
                 <umb-control-group ng-repeat="(key, category) in vm.settings.applicableCategories"
                                    label="{{vm.categoryLabel(key)}}"
@@ -16,89 +16,84 @@
                                     disabled="category.item2"
                                     on-click="vm.toggleCategory(key, 'item1')"
                                     show-labels="true"
-                                    label-on="Shown in the banner"
-                                    label-off="Hidden"></umb-toggle>
+                                    label-on="{{vm.t.shownInBanner}}"
+                                    label-off="{{vm.t.hidden}}"></umb-toggle>
 
                         <umb-toggle checked="category.item2"
                                     on-click="vm.toggleCategory(key, 'item2')"
                                     show-labels="true"
-                                    label-on="Always on, visitors cannot refuse"
-                                    label-off="Visitors decide"></umb-toggle>
+                                    label-on="{{vm.t.alwaysOn}}"
+                                    label-off="{{vm.t.visitorsDecide}}"></umb-toggle>
                     </div>
                 </umb-control-group>
             </umb-box-content>
         </umb-box>
 
         <umb-box>
-            <umb-box-header title="Language"
-                            description="The banner follows the visitor's language when it can be detected."></umb-box-header>
+            <umb-box-header title-key="cookieConsent_languageTitle"
+                            description-key="cookieConsent_languageDescription"></umb-box-header>
             <umb-box-content>
-                <umb-control-group label="Fallback language"
-                                   description="Used when the visitor's language is not available.">
+                <umb-control-group label="@cookieConsent_fallbackLanguage"
+                                   description="@cookieConsent_fallbackLanguageDescription">
                     <select class="umb-property-editor umb-dropdown"
                             ng-model="vm.settings.languageOptions.defaultLanguage"
                             ng-options="language.item1 as language.item2 for language in vm.settings.availableLanguages"></select>
                 </umb-control-group>
 
-                <p class="cookieconsent-hint">
-                    The choices offered here are the languages configured in Umbraco. Wording such as the banner
-                    title lives in the <a class="btn-link -underline" href="/umbraco#/translation/dictionary/list">Dictionary</a>,
-                    under the <code>Our.Umbraco.CookieConsent</code> key.
-                </p>
+                <p class="cookieconsent-hint" ng-bind-html="vm.t.languageHint"></p>
             </umb-box-content>
         </umb-box>
 
         <umb-box>
-            <umb-box-header title="Appearance"
-                            description="Where the two dialogs sit and how they look."></umb-box-header>
+            <umb-box-header title-key="cookieConsent_appearanceTitle"
+                            description-key="cookieConsent_appearanceDescription"></umb-box-header>
             <umb-box-content>
-                <umb-control-group label="Banner layout"
-                                   description="The first dialog a visitor sees.">
+                <umb-control-group label="@cookieConsent_bannerLayout"
+                                   description="@cookieConsent_bannerLayoutDescription">
                     <select class="umb-property-editor umb-dropdown"
                             ng-model="vm.settings.guiOptions.consentModalLayout"
-                            ng-options="layout.value as layout.displayName for layout in vm.enums.consentModalLayouts"></select>
+                            ng-options="layout.value as vm.t[layout.textKey] for layout in vm.enums.consentModalLayouts"></select>
                 </umb-control-group>
 
-                <umb-control-group label="Banner position">
+                <umb-control-group label="@cookieConsent_bannerPosition">
                     <select class="umb-property-editor umb-dropdown"
                             ng-model="vm.settings.guiOptions.consentModalPosition"
-                            ng-options="position.value as position.displayName for position in vm.enums.consentModalPositions"></select>
+                            ng-options="position.value as vm.t[position.textKey] for position in vm.enums.consentModalPositions"></select>
                 </umb-control-group>
 
-                <umb-control-group label="Preferences layout"
-                                   description="The dialog opened from Manage preferences.">
+                <umb-control-group label="@cookieConsent_preferencesLayout"
+                                   description="@cookieConsent_preferencesLayoutDescription">
                     <select class="umb-property-editor umb-dropdown"
                             ng-model="vm.settings.guiOptions.preferencesModalLayout"
-                            ng-options="layout.value as layout.displayName for layout in vm.enums.preferencesModalLayouts"></select>
+                            ng-options="layout.value as vm.t[layout.textKey] for layout in vm.enums.preferencesModalLayouts"></select>
                 </umb-control-group>
 
-                <umb-control-group label="Preferences position">
+                <umb-control-group label="@cookieConsent_preferencesPosition">
                     <select class="umb-property-editor umb-dropdown"
                             ng-model="vm.settings.guiOptions.preferencesModalPosition"
-                            ng-options="position.value as position.displayName for position in vm.enums.preferencesModalPositions"></select>
+                            ng-options="position.value as vm.t[position.textKey] for position in vm.enums.preferencesModalPositions"></select>
                 </umb-control-group>
 
-                <umb-control-group label="Theme">
-                    <select class="umb-property-editor umb-dropdown" ng-model="vm.settings.theme">
-                        <option value="light">Light</option>
-                        <option value="dark">Dark</option>
-                    </select>
+                <umb-control-group label="@cookieConsent_theme">
+                    <select class="umb-property-editor umb-dropdown"
+                            ng-model="vm.settings.theme"
+                            ng-options="theme.value as vm.t[theme.textKey] for theme in vm.enums.themes"></select>
                 </umb-control-group>
 
-                <umb-control-group label="Follow the visitor's dark mode"
-                                   description="Switches to the dark theme when the visitor's system asks for it.">
+                <umb-control-group label="@cookieConsent_followDarkMode"
+                                   description="@cookieConsent_followDarkModeDescription">
                     <umb-toggle checked="vm.settings.miscOptions.enableDarkMode"
                                 on-click="vm.settings.miscOptions.enableDarkMode = !vm.settings.miscOptions.enableDarkMode"></umb-toggle>
                 </umb-control-group>
 
-                <umb-control-group label="Turn off animations"
-                                   description="Shows the dialogs without fading or sliding.">
+                <umb-control-group label="@cookieConsent_disableTransitions"
+                                   description="@cookieConsent_disableTransitionsDescription">
                     <umb-toggle checked="vm.settings.miscOptions.disableTransitions"
                                 on-click="vm.settings.miscOptions.disableTransitions = !vm.settings.miscOptions.disableTransitions"></umb-toggle>
                 </umb-control-group>
 
-                <umb-control-group label="Block the page until a choice is made"
-                                   description="Dims the site and prevents browsing until the visitor answers.">
+                <umb-control-group label="@cookieConsent_disablePageInteraction"
+                                   description="@cookieConsent_disablePageInteractionDescription">
                     <umb-toggle checked="vm.settings.miscOptions.disablePageInteraction"
                                 on-click="vm.settings.miscOptions.disablePageInteraction = !vm.settings.miscOptions.disablePageInteraction"></umb-toggle>
                 </umb-control-group>
@@ -106,17 +101,17 @@
         </umb-box>
 
         <umb-box>
-            <umb-box-header title="Built-in scripts"
-                            description="Ready-made integrations that run before consent is given. Enter the ID and the package handles the rest."></umb-box-header>
+            <umb-box-header title-key="cookieConsent_builtInScriptsTitle"
+                            description-key="cookieConsent_builtInScriptsDescription"></umb-box-header>
             <umb-box-content>
                 <div class="cookieconsent-item" ng-repeat="item in vm.settings.builtInScripts track by $index">
-                    <umb-control-group label="Provider">
-                        <select class="umb-property-editor umb-dropdown" ng-model="item.provider">
-                            <option value="GoogleConsentMode">Google Consent Mode</option>
-                        </select>
+                    <umb-control-group label="@cookieConsent_provider">
+                        <select class="umb-property-editor umb-dropdown"
+                                ng-model="item.provider"
+                                ng-options="provider.value as vm.t[provider.textKey] for provider in vm.enums.builtInScriptProviders"></select>
                     </umb-control-group>
 
-                    <umb-control-group label="Measurement ID">
+                    <umb-control-group label="@cookieConsent_measurementId">
                         <input type="text"
                                class="umb-property-editor umb-textstring"
                                ng-model="item.id"
@@ -126,41 +121,38 @@
                     <umb-button action="vm.removeBuiltInScript($index)"
                                 type="button"
                                 button-style="link"
-                                label="Remove"></umb-button>
+                                label="{{vm.t.remove}}"></umb-button>
                 </div>
 
                 <p class="cookieconsent-empty" ng-if="!vm.settings.builtInScripts.length">
-                    No built-in script yet.
+                    {{vm.t.noBuiltInScript}}
                 </p>
 
                 <umb-button action="vm.addBuiltInScript()"
                             type="button"
                             button-style="success"
-                            label="Add built-in script"></umb-button>
+                            label="{{vm.t.addBuiltInScript}}"></umb-button>
             </umb-box-content>
         </umb-box>
 
         <umb-box>
-            <umb-box-header title="Custom scripts"
-                            description="Your own tracking code, run only once the visitor accepts the matching category."></umb-box-header>
+            <umb-box-header title-key="cookieConsent_customScriptsTitle"
+                            description-key="cookieConsent_customScriptsDescription"></umb-box-header>
             <umb-box-content>
-                <p class="cookieconsent-hint">
-                    <strong>JavaScript only.</strong> The code runs inside a function, so a <code>&lt;script&gt;</code>
-                    tag would break it. Load an external file by creating the element yourself:
-                </p>
+                <p class="cookieconsent-hint" ng-bind-html="vm.t.customScriptsHint"></p>
                 <pre class="cookieconsent-example">var s = document.createElement('script');
 s.src = 'https://example.com/tag.js';
 s.async = true;
 document.head.appendChild(s);</pre>
 
                 <div class="cookieconsent-item" ng-repeat="script in vm.settings.customScripts track by $index">
-                    <umb-control-group label="Runs after the visitor accepts">
+                    <umb-control-group label="@cookieConsent_runsAfterAccept">
                         <select class="umb-property-editor umb-dropdown"
                                 ng-model="script.type"
-                                ng-options="opt for opt in vm.scriptTypes"></select>
+                                ng-options="opt.value as vm.t[opt.textKey] for opt in vm.scriptTypes"></select>
                     </umb-control-group>
 
-                    <umb-control-group label="Code">
+                    <umb-control-group label="@cookieConsent_code">
                         <textarea id="custom-script-{{$index}}"
                                   rows="10"
                                   class="umb-property-editor umb-textarea cookieconsent-code"
@@ -170,17 +162,17 @@ document.head.appendChild(s);</pre>
                     <umb-button action="vm.removeCustomScript($index)"
                                 type="button"
                                 button-style="link"
-                                label="Remove"></umb-button>
+                                label="{{vm.t.remove}}"></umb-button>
                 </div>
 
                 <p class="cookieconsent-empty" ng-if="!vm.settings.customScripts.length">
-                    No custom script yet.
+                    {{vm.t.noCustomScript}}
                 </p>
 
                 <umb-button action="vm.addCustomScript()"
                             type="button"
                             button-style="success"
-                            label="Add script"></umb-button>
+                            label="{{vm.t.addScript}}"></umb-button>
             </umb-box-content>
         </umb-box>
 
@@ -189,11 +181,11 @@ document.head.appendChild(s);</pre>
                 <umb-button action="vm.resetConfig()"
                             type="button"
                             button-style="link"
-                            label="Reset to defaults"></umb-button>
+                            label="{{vm.t.resetToDefaults}}"></umb-button>
                 <umb-button action="vm.saveSettings()"
                             type="button"
                             button-style="success"
-                            label="Save"></umb-button>
+                            label="{{vm.t.save}}"></umb-button>
             </umb-editor-footer-content-right>
         </umb-editor-footer>
     </div>

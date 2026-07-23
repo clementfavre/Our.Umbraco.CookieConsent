@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<language>
+  <area alias="dashboardTabs">
+    <key alias="Our.Umbraco.CookieConsent">Cookie-Consent-Einstellungen 🍪</key>
+  </area>
+  <area alias="cookieConsent">
+    <!-- Categories -->
+    <key alias="categoriesTitle">Cookie-Kategorien</key>
+    <key alias="categoriesDescription">Wählen Sie die im Banner angezeigten Kategorien und ob Besucher sie ändern dürfen.</key>
+    <key alias="categoryNecessary">Unbedingt erforderlich</key>
+    <key alias="categoryNecessaryDescription">Für den Betrieb der Website nötig; Besucher werden dazu nie gefragt.</key>
+    <key alias="categoryFunctionality">Funktionalität</key>
+    <key alias="categoryFunctionalityDescription">Merkt sich Einstellungen wie Sprache oder Region.</key>
+    <key alias="categoryAnalytics">Statistik</key>
+    <key alias="categoryAnalyticsDescription">Misst, wie Besucher die Website nutzen.</key>
+    <key alias="categoryMarketing">Marketing</key>
+    <key alias="categoryMarketingDescription">Dient dazu, Werbung nach Surfverhalten auszuspielen.</key>
+    <key alias="shownInBanner">Im Banner angezeigt</key>
+    <key alias="hidden">Ausgeblendet</key>
+    <key alias="alwaysOn">Immer aktiv, Ablehnung nicht möglich</key>
+    <key alias="visitorsDecide">Besucher entscheiden</key>
+
+    <!-- Language -->
+    <key alias="languageTitle">Sprache</key>
+    <key alias="languageDescription">Das Banner folgt der Sprache des Besuchers, sofern sie erkannt wird.</key>
+    <key alias="fallbackLanguage">Ersatzsprache</key>
+    <key alias="fallbackLanguageDescription">Wird verwendet, wenn die Sprache des Besuchers nicht verfügbar ist.</key>
+    <key alias="languageHint"><![CDATA[Die hier angebotenen Sprachen sind die in Umbraco konfigurierten. Texte wie der Banner-Titel werden im <a href="/umbraco#/translation/dictionary/list">Wörterbuch</a> unter dem Schlüssel <code>Our.Umbraco.CookieConsent</code> gepflegt.]]></key>
+
+    <!-- Appearance -->
+    <key alias="appearanceTitle">Darstellung</key>
+    <key alias="appearanceDescription">Wo die beiden Dialoge sitzen und wie sie aussehen.</key>
+    <key alias="bannerLayout">Banner-Layout</key>
+    <key alias="bannerLayoutDescription">Der erste Dialog, den ein Besucher sieht.</key>
+    <key alias="bannerPosition">Banner-Position</key>
+    <key alias="preferencesLayout">Layout der Einstellungen</key>
+    <key alias="preferencesLayoutDescription">Der Dialog, der über „Einstellungen verwalten“ geöffnet wird.</key>
+    <key alias="preferencesPosition">Position der Einstellungen</key>
+    <key alias="theme">Design</key>
+    <key alias="themeLight">Hell</key>
+    <key alias="themeDark">Dunkel</key>
+    <key alias="followDarkMode">Dunkelmodus des Besuchers übernehmen</key>
+    <key alias="followDarkModeDescription">Wechselt zum dunklen Design, wenn das System des Besuchers es verlangt.</key>
+    <key alias="disableTransitions">Animationen abschalten</key>
+    <key alias="disableTransitionsDescription">Zeigt die Dialoge ohne Ein- und Ausblenden.</key>
+    <key alias="disablePageInteraction">Seite bis zur Entscheidung sperren</key>
+    <key alias="disablePageInteractionDescription">Dunkelt die Website ab und verhindert das Navigieren, bis der Besucher antwortet.</key>
+
+    <!-- Layouts, named after the Orestbida library so the docs stay readable -->
+    <key alias="layoutBox">Box</key>
+    <key alias="layoutBoxInline">Box, Schaltflächen nebeneinander</key>
+    <key alias="layoutBoxWide">Box breit</key>
+    <key alias="layoutCloud">Cloud</key>
+    <key alias="layoutCloudInline">Cloud, Schaltflächen nebeneinander</key>
+    <key alias="layoutBar">Bar</key>
+    <key alias="layoutBarInline">Bar, Schaltflächen nebeneinander</key>
+    <key alias="layoutBarWide">Bar breit</key>
+
+    <!-- Positions -->
+    <key alias="positionTopLeft">Oben links</key>
+    <key alias="positionTopCenter">Oben mittig</key>
+    <key alias="positionTopRight">Oben rechts</key>
+    <key alias="positionMiddleLeft">Mittig links</key>
+    <key alias="positionMiddleCenter">Mittig zentriert</key>
+    <key alias="positionMiddleRight">Mittig rechts</key>
+    <key alias="positionBottomLeft">Unten links</key>
+    <key alias="positionBottomCenter">Unten mittig</key>
+    <key alias="positionBottomRight">Unten rechts</key>
+    <key alias="positionLeft">Links</key>
+    <key alias="positionRight">Rechts</key>
+
+    <!-- Built-in scripts -->
+    <key alias="builtInScriptsTitle">Integrierte Skripte</key>
+    <key alias="builtInScriptsDescription">Fertige Integrationen, die vor der Einwilligung laufen. ID eintragen, den Rest übernimmt das Paket.</key>
+    <key alias="provider">Anbieter</key>
+    <key alias="providerGoogleConsentMode">Google Consent Mode</key>
+    <key alias="measurementId">Mess-ID</key>
+    <key alias="noBuiltInScript">Noch kein integriertes Skript.</key>
+    <key alias="addBuiltInScript">Integriertes Skript hinzufügen</key>
+
+    <!-- Custom scripts -->
+    <key alias="customScriptsTitle">Eigene Skripte</key>
+    <key alias="customScriptsDescription">Ihr eigener Tracking-Code, der erst läuft, wenn der Besucher die passende Kategorie akzeptiert.</key>
+    <key alias="customScriptsHint"><![CDATA[<strong>Nur JavaScript.</strong> Der Code läuft innerhalb einer Funktion, ein <code>&lt;script&gt;</code>-Tag würde ihn zerstören. Externe Dateien laden Sie, indem Sie das Element selbst erzeugen:]]></key>
+    <key alias="runsAfterAccept">Läuft nach Zustimmung zu</key>
+    <key alias="code">Code</key>
+    <key alias="noCustomScript">Noch kein eigenes Skript.</key>
+    <key alias="addScript">Skript hinzufügen</key>
+
+    <!-- Shared -->
+    <key alias="remove">Entfernen</key>
+    <key alias="resetToDefaults">Auf Standard zurücksetzen</key>
+    <key alias="save">Speichern</key>
+
+    <!-- Notifications -->
+    <key alias="error">Fehler</key>
+    <key alias="success">Erfolg</key>
+    <key alias="loadFailed">Einstellungen konnten nicht geladen werden.</key>
+    <key alias="saveSucceeded">Einstellungen gespeichert.</key>
+    <key alias="saveFailed">Einstellungen konnten nicht gespeichert werden.</key>
+    <key alias="resetSucceeded">Einstellungen auf Standard zurückgesetzt.</key>
+    <key alias="resetFailed">Einstellungen konnten nicht zurückgesetzt werden.</key>
+  </area>
+</language>

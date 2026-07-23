@@ -22,6 +22,11 @@
     color: #515054;
 }
 
+/* The hints come from the language files, and ngSanitize drops any class on the markup */
+.cookieconsent-hint a {
+    text-decoration: underline;
+}
+
 .cookieconsent-empty {
     color: #868689;
     font-style: italic;
