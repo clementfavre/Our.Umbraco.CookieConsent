@@ -1,6 +1,9 @@
+using System.Security.Cryptography;
+using System.Text;
 using Microsoft.Extensions.Logging;
 using Our.Umbraco.CookieConsent.Models;
 using Our.Umbraco.CookieConsent.Services;
+using Umbraco.Cms.Core.Models;
 using Umbraco.Cms.Core.Services;
 
 namespace Our.Umbraco.CookieConsent;
@@ -84,20 +87,40 @@ public class DictionaryKeySeeder
     {
         try
         {
-            var existingItem = _localizationService.GetDictionaryItemByKey(key);
-            if (existingItem == null)
+            var itemId = DeterministicGuid(key);
+
+            // Match on the deterministic GUID first, then the alias, so an Umbraco Deploy
+            // artifact for the same item is never duplicated whatever the order of operations
+            var existingItem = _localizationService.GetDictionaryItemById(itemId)
+                               ?? _localizationService.GetDictionaryItemByKey(key);
+            if (existingItem != null)
             {
-                var dict = _localizationService.CreateDictionaryItemWithIdentity(key, parentId: parentKey, value);
-                _logger.LogInformation($"Created translation key: {key}");
-                return dict?.Key;
+                _logger.LogInformation($"Key already exists: {key}");
+                return existingItem.Key;
             }
-            _logger.LogInformation($"Key already exists: {key}");
-            return existingItem?.Key;
+
+            var item = new DictionaryItem(parentKey, key) { Key = itemId };
+
+            var defaultIso = _localizationService.GetDefaultLanguageIsoCode();
+            var defaultLanguage = defaultIso is null ? null : _localizationService.GetLanguageByIsoCode(defaultIso);
+            if (defaultLanguage != null)
+                item.Translations = new[] { new DictionaryTranslation(defaultLanguage, value) };
+
+            _localizationService.Save(item);
+            _logger.LogInformation($"Created translation key: {key}");
+            return item.Key;
         }
         catch (Exception ex)
         {
             _logger.LogError($"Error creating key {key}: {ex.Message}");
             return null;
         }
+    }
+
+    // Stable GUID derived from the alias so every environment seeds the same identifier
+    private static Guid DeterministicGuid(string key)
+    {
+        var hash = MD5.HashData(Encoding.UTF8.GetBytes(Translations.NAMESPACE + "|" + key));
+        return new Guid(hash);
     }
 }
