@@ -32,7 +32,8 @@ public class DictionaryKeySeeder
         CreateKey(Translations.PreferencesModal.AcceptAll, "Accept All Cookies", parentKey);
         CreateKey(Translations.PreferencesModal.RejectAll, "Reject All Cookies", parentKey);
         CreateKey(Translations.PreferencesModal.Save, "Save My Preferences", parentKey);
-        CreateKey(Translations.PreferencesModal.ServiceCounterLabel, "Enabled Services: {count}", parentKey);
+        // orestbida prefixes the count and picks singular/plural split on '|'
+        CreateKey(Translations.PreferencesModal.ServiceCounterLabel, "Enabled service|Enabled services", parentKey);
     }
 
     // sectionName = analytics / marketing / functional ...
