@@ -3,7 +3,8 @@ namespace Our.Umbraco.CookieConsent.Models;
 public enum BuiltInScriptLoader
 {
     GoogleAnalytics,
-    GoogleTagManager
+    GoogleTagManager,
+    FacebookPixel
 }
 
 public class BuiltInScriptProviderDescriptor
@@ -17,12 +18,14 @@ public static class BuiltInScriptProviders
 {
     public const string GoogleAnalyticsKey = "GoogleAnalytics";
     public const string GoogleTagManagerKey = "GoogleTagManager";
+    public const string FacebookPixelKey = "FacebookPixel";
 
     private static readonly Dictionary<string, BuiltInScriptProviderDescriptor> ByKey =
         new(StringComparer.OrdinalIgnoreCase)
         {
             [GoogleAnalyticsKey] = new() { Key = GoogleAnalyticsKey, Loader = BuiltInScriptLoader.GoogleAnalytics },
-            [GoogleTagManagerKey] = new() { Key = GoogleTagManagerKey, Loader = BuiltInScriptLoader.GoogleTagManager }
+            [GoogleTagManagerKey] = new() { Key = GoogleTagManagerKey, Loader = BuiltInScriptLoader.GoogleTagManager },
+            [FacebookPixelKey] = new() { Key = FacebookPixelKey, Loader = BuiltInScriptLoader.FacebookPixel }
         };
 
     // Installs from before the analytics and tag manager split stored the provider as "GoogleConsentMode"

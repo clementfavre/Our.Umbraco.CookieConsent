@@ -122,6 +122,10 @@
                        ng-if="item.provider === 'GoogleTagManager'"
                        ng-bind-html="vm.t.providerGtmNote"></p>
 
+                    <p class="cookieconsent-hint"
+                       ng-if="item.provider === 'FacebookPixel'"
+                       ng-bind-html="vm.t.providerFbNote"></p>
+
                     <umb-button action="vm.removeBuiltInScript($index)"
                                 type="button"
                                 button-style="link"

@@ -24,8 +24,9 @@
         "positionBottomLeft", "positionBottomCenter", "positionBottomRight",
         "positionLeft", "positionRight",
         "builtInScriptsTitle", "builtInScriptsDescription", "provider",
-        "providerGoogleAnalytics", "providerGoogleTagManager", "providerGtmNote",
-        "measurementId", "containerId", "noBuiltInScript", "addBuiltInScript",
+        "providerGoogleAnalytics", "providerGoogleTagManager", "providerFacebookPixel",
+        "providerGtmNote", "providerFbNote",
+        "measurementId", "containerId", "pixelId", "noBuiltInScript", "addBuiltInScript",
         "customScriptsTitle", "customScriptsDescription", "customScriptsHint",
         "runsAfterAccept", "code", "noCustomScript", "addScript",
         "remove", "resetToDefaults", "save",
@@ -105,7 +106,8 @@
             ],
             builtInScriptProviders: [
                 { value: 'GoogleAnalytics', textKey: 'providerGoogleAnalytics', placeholder: 'G-XXXXXXXXXX', labelKey: 'measurementId' },
-                { value: 'GoogleTagManager', textKey: 'providerGoogleTagManager', placeholder: 'GTM-XXXXXXX', labelKey: 'containerId' }
+                { value: 'GoogleTagManager', textKey: 'providerGoogleTagManager', placeholder: 'GTM-XXXXXXX', labelKey: 'containerId' },
+                { value: 'FacebookPixel', textKey: 'providerFacebookPixel', placeholder: 'XXXXXXXXXXXXXXX', labelKey: 'pixelId' }
             ]
         };
 

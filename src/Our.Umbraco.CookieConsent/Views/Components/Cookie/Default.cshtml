@@ -30,12 +30,20 @@
         });
     }
 
-    var googleScripts = (cookieSettings.BuiltInScripts ?? Enumerable.Empty<BuiltInScriptOptionsModel>())
+    var builtInScripts = (cookieSettings.BuiltInScripts ?? Enumerable.Empty<BuiltInScriptOptionsModel>())
         .Select(b => new { Loader = BuiltInScriptProviders.Resolve(b.Provider)?.Loader, Id = b.Id?.Trim() })
         .Where(b => b.Loader != null && !string.IsNullOrWhiteSpace(b.Id))
         .ToList();
 
+    var googleScripts = builtInScripts
+        .Where(b => b.Loader is BuiltInScriptLoader.GoogleAnalytics or BuiltInScriptLoader.GoogleTagManager)
+        .ToList();
+    var facebookScripts = builtInScripts
+        .Where(b => b.Loader == BuiltInScriptLoader.FacebookPixel)
+        .ToList();
+
     bool isGoogleConsentModeActivated = googleScripts.Any();
+    bool isFacebookPixelActivated = facebookScripts.Any();
 }
 @if (cookieSettings is not null)
 {
@@ -45,6 +53,7 @@
         window.addEventListener('load', () => {
             const CAT_ANALYTICS = "analytics";
             const CAT_ADVERTISEMENT = "advertisement";
+            const CAT_MARKETING = "marketing";
             const CAT_FUNCTIONALITY = "functionality";
             const CAT_SECURITY = "security";
 
@@ -102,6 +111,32 @@
                 }
             }
 
+            @if (isFacebookPixelActivated) {
+                <text>
+                // Meta Pixel base code, loaded with consent revoked until the visitor accepts marketing
+                !function(f,b,e,v,n,t,s)
+                {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+                n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+                if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+                n.queue=[];t=b.createElement(e);t.async=!0;
+                t.src=v;s=b.getElementsByTagName(e)[0];
+                s.parentNode.insertBefore(t,s)}(window, document,'script',
+                'https://connect.facebook.net/en_US/fbevents.js');
+
+                fbq('consent', 'revoke');
+                </text>
+
+                foreach (var script in facebookScripts) {
+                    <text>
+                    fbq('init', '@script.Id');
+                    </text>
+                }
+
+                <text>
+                fbq('track', 'PageView');
+                </text>
+            }
+
             CookieConsent.run({
                 current_lang: '@System.Threading.Thread.CurrentThread.CurrentCulture.TwoLetterISOLanguageName',
                 autoclear_cookies: true,
@@ -126,6 +161,7 @@
                     @foreach (var category in categories)
                     {
                         var isAnalytics = category.LowerName == "analytics";
+                        var isMarketing = category.LowerName == "marketing";
                         <text>@category.LowerName: {
                             readOnly: @category.IsReadOnly,
                             enabled: true,
@@ -146,6 +182,21 @@
                                     [SERVICE_ANALYTICS_STORAGE]: {
                                         label: 'Enables storage (such as cookies) related to analytics e.g. visit duration.',
                                     }
+                                }
+                                </text>
+                            }
+                            @if (isMarketing && isFacebookPixelActivated)
+                            {
+                                <text>
+                                autoClear: {
+                                    cookies: [
+                                        {
+                                            name: /^_fbp/,   // Meta Pixel first-party cookie
+                                        },
+                                        {
+                                            name: /^_fbc/,
+                                        }
+                                    ]
                                 }
                                 </text>
                             }
@@ -175,6 +226,7 @@
                                     @foreach (var category in categories)
                                     {
                                         var isAnalytics = category.LowerName == "analytics";
+                                        var isMarketing = category.LowerName == "marketing";
                                         <text>{
                                             title: "@category.Title",
                                             description: "@category.Description",
@@ -205,6 +257,32 @@
                                                     ]
                                                 }</text>
                                             }
+                                            @if (isMarketing && isFacebookPixelActivated)
+                                            {
+                                                <text>,
+                                                cookieTable: {
+                                                    headers: {
+                                                        name: "Name",
+                                                        domain: "Service",
+                                                        description: "Description",
+                                                        expiration: "Expiration"
+                                                    },
+                                                    body: [
+                                                        {
+                                                            name: "_fbp",
+                                                            domain: "Meta Pixel",
+                                                            description: "Cookie set by <a href=\"https://www.facebook.com/privacy/policy/\">Meta Pixel</a>",
+                                                            expiration: "Expires after 3 months"
+                                                        },
+                                                        {
+                                                            name: "_fbc",
+                                                            domain: "Meta Pixel",
+                                                            description: "Cookie set by <a href=\"https://www.facebook.com/privacy/policy/\">Meta Pixel</a>",
+                                                            expiration: "Expires after 3 months"
+                                                        }
+                                                    ]
+                                                }</text>
+                                            }
                                         },</text>
                                     }
                                 ]
@@ -216,14 +294,17 @@
                 onFirstConsent: () => {
                     runScripts();
                     updateGtagConsent();
+                    updateFbqConsent();
                 },
                 onConsent: () => {
                     runScripts();
                     updateGtagConsent();
+                    updateFbqConsent();
                 },
                 onChange: () => {
                     runScripts();
                     updateGtagConsent();
+                    updateFbqConsent();
                 }
             });
 
@@ -257,6 +338,12 @@
                     [SERVICE_PERSONALIZATION_STORAGE]: CookieConsent.acceptedService(SERVICE_PERSONALIZATION_STORAGE, CAT_FUNCTIONALITY) ? 'granted' : 'denied',
                     [SERVICE_SECURITY_STORAGE]: CookieConsent.acceptedService(SERVICE_SECURITY_STORAGE, CAT_SECURITY) ? 'granted' : 'denied'
                 });
+            }
+
+            function updateFbqConsent() {
+                if (!window.fbq) return;
+
+                fbq('consent', CookieConsent.acceptedCategory(CAT_MARKETING) ? 'grant' : 'revoke');
             }
         });
         @if(cookieSettings != null && cookieSettings.MiscOptions.EnableDarkMode) {

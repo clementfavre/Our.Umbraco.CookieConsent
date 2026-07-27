@@ -77,10 +77,13 @@ This logic will only be executed if the user accepts the **analytics** category
 
 The **"Built-in Scripts"** section covers integrations that need to run before consent is given, which custom scripts cannot do
 
-Both entries implement Google Consent Mode: the package sets every consent signal (`ad_storage`, `ad_user_data`, `ad_personalization`, `analytics_storage`, ...) to `denied` before any Google script runs, then updates them as soon as the visitor makes a choice, so Google receives consent signals rather than nothing at all. Pick the provider that matches how Google is loaded on your site:
+Add an entry, pick a provider and fill in its ID. Each one loads before consent is given and is held until the visitor makes a choice.
+
+The two Google providers implement Google Consent Mode: the package sets every consent signal (`ad_storage`, `ad_user_data`, `ad_personalization`, `analytics_storage`, ...) to `denied` before any Google script runs, then updates them as soon as the visitor makes a choice, so Google receives consent signals rather than nothing at all. Pick the one that matches how Google is loaded on your site:
 
 - **Google Analytics** loads `gtag.js` directly. Fill in your measurement ID (`G-XXXXXXXXXX`). Use this when you do not go through Tag Manager, and in that case do not also load GA4 from a container or it runs twice.
 - **Google Tag Manager** loads the `gtm.js` container. Fill in your container ID (`GTM-XXXXXXX`). The package only sends the consent signals; for them to gate anything, turn on the **Consent settings** of your tags inside Tag Manager.
+- **Facebook Pixel** loads the Meta Pixel with consent revoked (`fbq('consent', 'revoke')`), then grants it once the visitor accepts the **Marketing** category and revokes it again on withdrawal. Fill in your pixel ID (a numeric value). Keep the Marketing category enabled, or the Pixel stays revoked.
 
 Leave the ID empty and nothing is injected.
 

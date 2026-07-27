@@ -75,9 +75,12 @@
     <key alias="provider">Provider</key>
     <key alias="providerGoogleAnalytics">Google Analytics (gtag.js)</key>
     <key alias="providerGoogleTagManager">Google Tag Manager</key>
+    <key alias="providerFacebookPixel">Facebook Pixel</key>
     <key alias="measurementId">Measurement ID</key>
     <key alias="containerId">Container ID</key>
+    <key alias="pixelId">Pixel ID</key>
     <key alias="providerGtmNote"><![CDATA[The package sends Google consent signals. For them to gate anything, turn on <strong>Consent settings</strong> for your tags in Tag Manager.]]></key>
+    <key alias="providerFbNote"><![CDATA[The Pixel loads with consent revoked and is granted only when the visitor accepts the <strong>Marketing</strong> category, so keep that category enabled.]]></key>
     <key alias="noBuiltInScript">No built-in script yet.</key>
     <key alias="addBuiltInScript">Add built-in script</key>
 

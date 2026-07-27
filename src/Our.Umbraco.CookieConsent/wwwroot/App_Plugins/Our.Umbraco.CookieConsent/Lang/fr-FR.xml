@@ -75,9 +75,12 @@
     <key alias="provider">Fournisseur</key>
     <key alias="providerGoogleAnalytics">Google Analytics (gtag.js)</key>
     <key alias="providerGoogleTagManager">Google Tag Manager</key>
+    <key alias="providerFacebookPixel">Facebook Pixel</key>
     <key alias="measurementId">Identifiant de mesure</key>
     <key alias="containerId">Identifiant de conteneur</key>
+    <key alias="pixelId">Identifiant de pixel</key>
     <key alias="providerGtmNote"><![CDATA[Le paquet envoie les signaux de consentement Google. Pour qu'ils bloquent quoi que ce soit, activez les <strong>paramètres de consentement</strong> sur vos balises dans Tag Manager.]]></key>
+    <key alias="providerFbNote"><![CDATA[Le Pixel se charge avec le consentement révoqué et n'est accordé que si le visiteur accepte la catégorie <strong>Marketing</strong> : gardez donc cette catégorie activée.]]></key>
     <key alias="noBuiltInScript">Aucun script intégré pour l'instant.</key>
     <key alias="addBuiltInScript">Ajouter un script intégré</key>
 
