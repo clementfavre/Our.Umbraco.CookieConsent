@@ -73,8 +73,11 @@
     <key alias="builtInScriptsTitle">Built-in scripts</key>
     <key alias="builtInScriptsDescription">Ready-made integrations that run before consent is given. Enter the ID and the package handles the rest.</key>
     <key alias="provider">Provider</key>
-    <key alias="providerGoogleConsentMode">Google Consent Mode</key>
+    <key alias="providerGoogleAnalytics">Google Analytics (gtag.js)</key>
+    <key alias="providerGoogleTagManager">Google Tag Manager</key>
     <key alias="measurementId">Measurement ID</key>
+    <key alias="containerId">Container ID</key>
+    <key alias="providerGtmNote"><![CDATA[The package sends Google consent signals. For them to gate anything, turn on <strong>Consent settings</strong> for your tags in Tag Manager.]]></key>
     <key alias="noBuiltInScript">No built-in script yet.</key>
     <key alias="addBuiltInScript">Add built-in script</key>
 

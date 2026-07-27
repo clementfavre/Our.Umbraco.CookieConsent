@@ -111,12 +111,16 @@
                                 ng-options="provider.value as vm.t[provider.textKey] for provider in vm.enums.builtInScriptProviders"></select>
                     </umb-control-group>
 
-                    <umb-control-group label="@cookieConsent_measurementId">
+                    <umb-control-group label="{{vm.builtInIdLabel(item.provider)}}">
                         <input type="text"
                                class="umb-property-editor umb-textstring"
                                ng-model="item.id"
-                               placeholder="G-XXXXXXXXXX" />
+                               placeholder="{{vm.builtInPlaceholder(item.provider)}}" />
                     </umb-control-group>
+
+                    <p class="cookieconsent-hint"
+                       ng-if="item.provider === 'GoogleTagManager'"
+                       ng-bind-html="vm.t.providerGtmNote"></p>
 
                     <umb-button action="vm.removeBuiltInScript($index)"
                                 type="button"

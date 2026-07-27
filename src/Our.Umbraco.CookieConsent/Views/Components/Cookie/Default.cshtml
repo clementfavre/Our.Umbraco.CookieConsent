@@ -30,10 +30,12 @@
         });
     }
 
-    var googleConsentModeScript = cookieSettings.BuiltInScripts?
-    .FirstOrDefault(b => string.Equals(b.Provider?.Trim(), "GoogleConsentMode", StringComparison.OrdinalIgnoreCase));
+    var googleScripts = (cookieSettings.BuiltInScripts ?? Enumerable.Empty<BuiltInScriptOptionsModel>())
+        .Select(b => new { Loader = BuiltInScriptProviders.Resolve(b.Provider)?.Loader, Id = b.Id?.Trim() })
+        .Where(b => b.Loader != null && !string.IsNullOrWhiteSpace(b.Id))
+        .ToList();
 
-    bool isGoogleConsentModeActivated = googleConsentModeScript != null;
+    bool isGoogleConsentModeActivated = googleScripts.Any();
 }
 @if (cookieSettings is not null)
 {
@@ -54,30 +56,50 @@
             const SERVICE_PERSONALIZATION_STORAGE = 'personalization_storage';
             const SERVICE_SECURITY_STORAGE = 'security_storage';
 
-            @if (isGoogleConsentModeActivated && !string.IsNullOrWhiteSpace(googleConsentModeScript.Id)) {
+            @if (isGoogleConsentModeActivated) {
                 <text>
-                const gtagScript = document.createElement('script');
-                gtagScript.src = 'https://www.googletagmanager.com/gtag/js?id=@googleConsentModeScript.Id';
-                gtagScript.async = true;
-                document.head.appendChild(gtagScript);
+                // Consent Mode default must be set before any Google loader runs
+                window.dataLayer = window.dataLayer || [];
+                function gtag(){dataLayer.push(arguments);}
+                window.gtag = gtag;
 
-                gtagScript.onload = function () {
-                    // Define dataLayer and the gtag function.
-                    window.dataLayer = window.dataLayer || [];
-                    function gtag(){dataLayer.push(arguments);}
+                gtag('consent', 'default', {
+                    [SERVICE_AD_STORAGE]: 'denied',
+                    [SERVICE_AD_USER_DATA]: 'denied',
+                    [SERVICE_AD_PERSONALIZATION]: 'denied',
+                    [SERVICE_ANALYTICS_STORAGE]: 'denied',
+                    [SERVICE_FUNCTIONALITY_STORAGE]: 'denied',
+                    [SERVICE_PERSONALIZATION_STORAGE]: 'denied',
+                    [SERVICE_SECURITY_STORAGE]: 'denied',
+                });
 
-                    // Set default consent to 'denied' (this should happen before changing any other dataLayer)
-                    gtag('consent', 'default', {
-                        [SERVICE_AD_STORAGE]: 'denied',
-                        [SERVICE_AD_USER_DATA]: 'denied',
-                        [SERVICE_AD_PERSONALIZATION]: 'denied',
-                        [SERVICE_ANALYTICS_STORAGE]: 'denied',
-                        [SERVICE_FUNCTIONALITY_STORAGE]: 'denied',
-                        [SERVICE_PERSONALIZATION_STORAGE]: 'denied',
-                        [SERVICE_SECURITY_STORAGE]: 'denied',
-                    });
-                };
+                gtag('js', new Date());
                 </text>
+
+                foreach (var script in googleScripts) {
+                    if (script.Loader == BuiltInScriptLoader.GoogleAnalytics) {
+                        <text>
+                        gtag('config', '@script.Id');
+                        (function () {
+                            var s = document.createElement('script');
+                            s.src = 'https://www.googletagmanager.com/gtag/js?id=@script.Id';
+                            s.async = true;
+                            document.head.appendChild(s);
+                        })();
+                        </text>
+                    }
+                    else {
+                        <text>
+                        (function () {
+                            dataLayer.push({ 'gtm.start': new Date().getTime(), event: 'gtm.js' });
+                            var s = document.createElement('script');
+                            s.src = 'https://www.googletagmanager.com/gtm.js?id=@script.Id';
+                            s.async = true;
+                            document.head.appendChild(s);
+                        })();
+                        </text>
+                    }
+                }
             }
 
             CookieConsent.run({

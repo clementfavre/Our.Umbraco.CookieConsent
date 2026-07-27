@@ -73,8 +73,11 @@
     <key alias="builtInScriptsTitle">Integrierte Skripte</key>
     <key alias="builtInScriptsDescription">Fertige Integrationen, die vor der Einwilligung laufen. ID eintragen, den Rest übernimmt das Paket.</key>
     <key alias="provider">Anbieter</key>
-    <key alias="providerGoogleConsentMode">Google Consent Mode</key>
+    <key alias="providerGoogleAnalytics">Google Analytics (gtag.js)</key>
+    <key alias="providerGoogleTagManager">Google Tag Manager</key>
     <key alias="measurementId">Mess-ID</key>
+    <key alias="containerId">Container-ID</key>
+    <key alias="providerGtmNote"><![CDATA[Das Paket sendet die Google-Consent-Signale. Damit sie etwas blockieren, aktivieren Sie die <strong>Consent-Einstellungen</strong> Ihrer Tags im Tag Manager.]]></key>
     <key alias="noBuiltInScript">Noch kein integriertes Skript.</key>
     <key alias="addBuiltInScript">Integriertes Skript hinzufügen</key>
 

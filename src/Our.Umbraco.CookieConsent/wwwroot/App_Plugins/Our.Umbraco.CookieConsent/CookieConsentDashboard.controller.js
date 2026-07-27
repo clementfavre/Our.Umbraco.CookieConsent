@@ -23,8 +23,9 @@
         "positionMiddleLeft", "positionMiddleCenter", "positionMiddleRight",
         "positionBottomLeft", "positionBottomCenter", "positionBottomRight",
         "positionLeft", "positionRight",
-        "builtInScriptsTitle", "builtInScriptsDescription", "provider", "providerGoogleConsentMode",
-        "measurementId", "noBuiltInScript", "addBuiltInScript",
+        "builtInScriptsTitle", "builtInScriptsDescription", "provider",
+        "providerGoogleAnalytics", "providerGoogleTagManager", "providerGtmNote",
+        "measurementId", "containerId", "noBuiltInScript", "addBuiltInScript",
         "customScriptsTitle", "customScriptsDescription", "customScriptsHint",
         "runsAfterAccept", "code", "noCustomScript", "addScript",
         "remove", "resetToDefaults", "save",
@@ -103,8 +104,25 @@
                 { value: 'dark', textKey: 'themeDark' }
             ],
             builtInScriptProviders: [
-                { value: 'GoogleConsentMode', textKey: 'providerGoogleConsentMode' }
+                { value: 'GoogleAnalytics', textKey: 'providerGoogleAnalytics', placeholder: 'G-XXXXXXXXXX', labelKey: 'measurementId' },
+                { value: 'GoogleTagManager', textKey: 'providerGoogleTagManager', placeholder: 'GTM-XXXXXXX', labelKey: 'containerId' }
             ]
+        };
+
+        vm.builtInProvider = function (provider) {
+            return vm.enums.builtInScriptProviders.filter(function (p) {
+                return p.value === provider;
+            })[0];
+        };
+
+        vm.builtInPlaceholder = function (provider) {
+            var match = vm.builtInProvider(provider);
+            return match ? match.placeholder : '';
+        };
+
+        vm.builtInIdLabel = function (provider) {
+            var match = vm.builtInProvider(provider);
+            return match ? vm.t[match.labelKey] : vm.t.measurementId;
         };
 
         vm.loadTranslations = function () {
@@ -182,7 +200,7 @@
 
         vm.addBuiltInScript = function () {
             vm.settings.builtInScripts.push({
-                provider: "GoogleConsentMode",
+                provider: "GoogleAnalytics",
                 id: "",
             });
         };

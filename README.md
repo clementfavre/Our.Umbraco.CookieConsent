@@ -77,7 +77,10 @@ This logic will only be executed if the user accepts the **analytics** category
 
 The **"Built-in Scripts"** section covers integrations that need to run before consent is given, which custom scripts cannot do
 
-**Google Consent Mode** is the one currently available. Add an entry, pick it as the provider and fill in your measurement ID (`G-XXXXXXXXXX`). The package then loads `gtag.js` on every page and sets all consent signals to `denied` by default, including `ad_storage`, `ad_user_data`, `ad_personalization` and `analytics_storage`. They are updated as soon as the visitor makes a choice, so Google receives consent signals rather than nothing at all.
+Both entries implement Google Consent Mode: the package sets every consent signal (`ad_storage`, `ad_user_data`, `ad_personalization`, `analytics_storage`, ...) to `denied` before any Google script runs, then updates them as soon as the visitor makes a choice, so Google receives consent signals rather than nothing at all. Pick the provider that matches how Google is loaded on your site:
+
+- **Google Analytics** loads `gtag.js` directly. Fill in your measurement ID (`G-XXXXXXXXXX`). Use this when you do not go through Tag Manager, and in that case do not also load GA4 from a container or it runs twice.
+- **Google Tag Manager** loads the `gtm.js` container. Fill in your container ID (`GTM-XXXXXXX`). The package only sends the consent signals; for them to gate anything, turn on the **Consent settings** of your tags inside Tag Manager.
 
 Leave the ID empty and nothing is injected.
 

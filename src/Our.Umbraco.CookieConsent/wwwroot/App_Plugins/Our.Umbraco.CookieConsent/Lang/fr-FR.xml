@@ -73,8 +73,11 @@
     <key alias="builtInScriptsTitle">Scripts intégrés</key>
     <key alias="builtInScriptsDescription">Intégrations prêtes à l'emploi qui s'exécutent avant le consentement. Saisissez l'identifiant, le paquet s'occupe du reste.</key>
     <key alias="provider">Fournisseur</key>
-    <key alias="providerGoogleConsentMode">Google Consent Mode</key>
+    <key alias="providerGoogleAnalytics">Google Analytics (gtag.js)</key>
+    <key alias="providerGoogleTagManager">Google Tag Manager</key>
     <key alias="measurementId">Identifiant de mesure</key>
+    <key alias="containerId">Identifiant de conteneur</key>
+    <key alias="providerGtmNote"><![CDATA[Le paquet envoie les signaux de consentement Google. Pour qu'ils bloquent quoi que ce soit, activez les <strong>paramètres de consentement</strong> sur vos balises dans Tag Manager.]]></key>
     <key alias="noBuiltInScript">Aucun script intégré pour l'instant.</key>
     <key alias="addBuiltInScript">Ajouter un script intégré</key>
 
