@@ -69,6 +69,31 @@ const THEMES = [
     { value: 'dark', displayName: 'Dark' },
 ];
 
+// value is the contract shared with BuiltInScriptProviders.cs
+const BUILT_IN_PROVIDERS = [
+    {
+        value: 'GoogleAnalytics',
+        displayName: 'Google Analytics (gtag.js)',
+        idLabel: 'Measurement ID',
+        placeholder: 'G-XXXXXXXXXX',
+        note: '',
+    },
+    {
+        value: 'GoogleTagManager',
+        displayName: 'Google Tag Manager',
+        idLabel: 'Container ID',
+        placeholder: 'GTM-XXXXXXX',
+        note: 'The package sends Google consent signals. For them to gate anything, turn on Consent settings for your tags in Tag Manager.',
+    },
+    {
+        value: 'FacebookPixel',
+        displayName: 'Facebook Pixel',
+        idLabel: 'Pixel ID',
+        placeholder: 'XXXXXXXXXXXXXXX',
+        note: 'The Pixel loads with consent revoked and is granted only when the visitor accepts the Marketing category, so keep that category enabled.',
+    },
+];
+
 export class CookieConsentDashboardElement extends UmbLitElement {
     static properties = {
         _settings: { state: true },
@@ -391,39 +416,42 @@ export class CookieConsentDashboardElement extends UmbLitElement {
                 ${repeat(
                     scripts,
                     (_, index) => index,
-                    (script, index) => html`
-                        <div class="item">
-                            <umb-property-layout label="Provider">
-                                <div slot="editor">
-                                    ${this.#renderSelect(
-                                        'Provider',
-                                        [{ value: 'GoogleConsentMode', displayName: 'Google Consent Mode' }],
-                                        script.provider,
-                                        (value) => this.#update((settings) => (settings.builtInScripts[index].provider = value)),
-                                    )}
-                                </div>
-                            </umb-property-layout>
+                    (script, index) => {
+                        const provider = this.#builtInProvider(script.provider);
 
-                            <umb-property-layout label="Measurement ID">
-                                <uui-input
-                                    slot="editor"
-                                    label="Measurement ID"
-                                    placeholder="G-XXXXXXXXXX"
-                                    .value=${script.id ?? ''}
-                                    @change=${(event) =>
-                                        this.#update(
-                                            (settings) => (settings.builtInScripts[index].id = event.target.value),
-                                        )}></uui-input>
-                            </umb-property-layout>
+                        return html`
+                            <div class="item">
+                                <umb-property-layout label="Provider">
+                                    <div slot="editor">
+                                        ${this.#renderSelect('Provider', BUILT_IN_PROVIDERS, script.provider, (value) =>
+                                            this.#update((settings) => (settings.builtInScripts[index].provider = value)),
+                                        )}
+                                    </div>
+                                </umb-property-layout>
 
-                            <uui-button
-                                look="secondary"
-                                color="danger"
-                                label="Remove"
-                                @click=${() =>
-                                    this.#update((settings) => settings.builtInScripts.splice(index, 1))}></uui-button>
-                        </div>
-                    `,
+                                <umb-property-layout label=${provider.idLabel}>
+                                    <uui-input
+                                        slot="editor"
+                                        label=${provider.idLabel}
+                                        placeholder=${provider.placeholder}
+                                        .value=${script.id ?? ''}
+                                        @change=${(event) =>
+                                            this.#update(
+                                                (settings) => (settings.builtInScripts[index].id = event.target.value),
+                                            )}></uui-input>
+                                </umb-property-layout>
+
+                                ${provider.note ? html`<p class="hint">${provider.note}</p>` : nothing}
+
+                                <uui-button
+                                    look="secondary"
+                                    color="danger"
+                                    label="Remove"
+                                    @click=${() =>
+                                        this.#update((settings) => settings.builtInScripts.splice(index, 1))}></uui-button>
+                            </div>
+                        `;
+                    },
                 )}
                 ${scripts.length ? nothing : html`<p class="empty">No built-in script yet.</p>`}
 
@@ -432,7 +460,7 @@ export class CookieConsentDashboardElement extends UmbLitElement {
                     label="Add built-in script"
                     @click=${() =>
                         this.#update((settings) =>
-                            settings.builtInScripts.push({ provider: 'GoogleConsentMode', id: '' }),
+                            settings.builtInScripts.push({ provider: 'GoogleAnalytics', id: '' }),
                         )}></uui-button>
             </uui-box>
         `;
@@ -504,6 +532,10 @@ document.head.appendChild(s);</umb-code-block
                         this.#update((settings) => settings.customScripts.push({ type: 'Analytics', code: '' }))}></uui-button>
             </uui-box>
         `;
+    }
+
+    #builtInProvider(value) {
+        return BUILT_IN_PROVIDERS.find((provider) => provider.value === value) ?? BUILT_IN_PROVIDERS[0];
     }
 
     #renderSelect(label, options, selected, onChange) {

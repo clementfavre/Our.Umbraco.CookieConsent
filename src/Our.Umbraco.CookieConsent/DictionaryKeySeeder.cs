@@ -1,3 +1,5 @@
+using System.Security.Cryptography;
+using System.Text;
 using Microsoft.Extensions.Logging;
 using Our.Umbraco.CookieConsent.Models;
 using Our.Umbraco.CookieConsent.Services;
@@ -38,7 +40,8 @@ public class DictionaryKeySeeder
         await CreateKeyAsync(Translations.PreferencesModal.AcceptAll, "Accept All Cookies", parentKey);
         await CreateKeyAsync(Translations.PreferencesModal.RejectAll, "Reject All Cookies", parentKey);
         await CreateKeyAsync(Translations.PreferencesModal.Save, "Save My Preferences", parentKey);
-        await CreateKeyAsync(Translations.PreferencesModal.ServiceCounterLabel, "Enabled Services: {count}", parentKey);
+        // orestbida prefixes the count and picks singular/plural split on '|'
+        await CreateKeyAsync(Translations.PreferencesModal.ServiceCounterLabel, "Enabled service|Enabled services", parentKey);
     }
 
     // sectionName = analytics / marketing / functional ...
@@ -88,7 +91,12 @@ public class DictionaryKeySeeder
     {
         try
         {
-            var existingItem = await _dictionaryItemService.GetAsync(key);
+            var itemId = DeterministicGuid(key);
+
+            // Match on the deterministic GUID first, then the alias, so an Umbraco Deploy
+            // artifact for the same item is never duplicated whatever the order of operations
+            var existingItem = await _dictionaryItemService.GetAsync(itemId)
+                               ?? await _dictionaryItemService.GetAsync(key);
             if (existingItem != null)
             {
                 _logger.LogInformation("Key already exists: {DictionaryKey}", key);
@@ -97,6 +105,7 @@ public class DictionaryKeySeeder
 
             var dictionaryItem = new DictionaryItem(parentKey, key)
             {
+                Key = itemId,
                 Translations = await BuildTranslationsAsync(value)
             };
 
@@ -129,5 +138,12 @@ public class DictionaryKeySeeder
         return language is null
             ? new List<IDictionaryTranslation>()
             : new List<IDictionaryTranslation> { new DictionaryTranslation(language, value) };
+    }
+
+    // Stable GUID derived from the alias so every environment seeds the same identifier
+    private static Guid DeterministicGuid(string key)
+    {
+        var hash = MD5.HashData(Encoding.UTF8.GetBytes(Translations.NAMESPACE + "|" + key));
+        return new Guid(hash);
     }
 }

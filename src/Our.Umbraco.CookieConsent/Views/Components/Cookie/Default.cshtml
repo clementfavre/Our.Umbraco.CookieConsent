@@ -30,11 +30,20 @@
         });
     }
 
-    var googleConsentModeScript = cookieSettings.BuiltInScripts?
-    .FirstOrDefault(b => string.Equals(b.Provider?.Trim(), "GoogleConsentMode", StringComparison.OrdinalIgnoreCase));
+    var builtInScripts = (cookieSettings.BuiltInScripts ?? Enumerable.Empty<BuiltInScriptOptionsModel>())
+        .Select(b => new { Loader = BuiltInScriptProviders.Resolve(b.Provider)?.Loader, Id = b.Id?.Trim() })
+        .Where(b => b.Loader != null && !string.IsNullOrWhiteSpace(b.Id))
+        .ToList();
 
-    bool isGoogleConsentModeActivated = googleConsentModeScript != null;
-    var googleConsentModeId = googleConsentModeScript?.Id;
+    var googleScripts = builtInScripts
+        .Where(b => b.Loader is BuiltInScriptLoader.GoogleAnalytics or BuiltInScriptLoader.GoogleTagManager)
+        .ToList();
+    var facebookScripts = builtInScripts
+        .Where(b => b.Loader == BuiltInScriptLoader.FacebookPixel)
+        .ToList();
+
+    bool isGoogleConsentModeActivated = googleScripts.Any();
+    bool isFacebookPixelActivated = facebookScripts.Any();
     var customScripts = cookieSettings.CustomScripts ?? new List<ScriptOptionsModel>();
 }
 @if (cookieSettings is not null)
@@ -44,9 +53,8 @@
     <script>
         window.addEventListener('load', () => {
             const CAT_ANALYTICS = "analytics";
-            const CAT_ADVERTISEMENT = "advertisement";
+            const CAT_MARKETING = "marketing";
             const CAT_FUNCTIONALITY = "functionality";
-            const CAT_SECURITY = "security";
 
             const SERVICE_AD_STORAGE = 'ad_storage';
             const SERVICE_AD_USER_DATA = 'ad_user_data';
@@ -56,29 +64,75 @@
             const SERVICE_PERSONALIZATION_STORAGE = 'personalization_storage';
             const SERVICE_SECURITY_STORAGE = 'security_storage';
 
-            @if (isGoogleConsentModeActivated && !string.IsNullOrWhiteSpace(googleConsentModeId)) {
+            @if (isGoogleConsentModeActivated) {
                 <text>
-                const gtagScript = document.createElement('script');
-                gtagScript.src = 'https://www.googletagmanager.com/gtag/js?id=@googleConsentModeId';
-                gtagScript.async = true;
-                document.head.appendChild(gtagScript);
+                // Consent Mode default must be set before any Google loader runs
+                window.dataLayer = window.dataLayer || [];
+                function gtag(){dataLayer.push(arguments);}
+                window.gtag = gtag;
 
-                gtagScript.onload = function () {
-                    // Define dataLayer and the gtag function.
-                    window.dataLayer = window.dataLayer || [];
-                    function gtag(){dataLayer.push(arguments);}
+                gtag('consent', 'default', {
+                    [SERVICE_AD_STORAGE]: 'denied',
+                    [SERVICE_AD_USER_DATA]: 'denied',
+                    [SERVICE_AD_PERSONALIZATION]: 'denied',
+                    [SERVICE_ANALYTICS_STORAGE]: 'denied',
+                    [SERVICE_FUNCTIONALITY_STORAGE]: 'denied',
+                    [SERVICE_PERSONALIZATION_STORAGE]: 'denied',
+                    [SERVICE_SECURITY_STORAGE]: 'granted',
+                });
 
-                    // Set default consent to 'denied' (this should happen before changing any other dataLayer)
-                    gtag('consent', 'default', {
-                        [SERVICE_AD_STORAGE]: 'denied',
-                        [SERVICE_AD_USER_DATA]: 'denied',
-                        [SERVICE_AD_PERSONALIZATION]: 'denied',
-                        [SERVICE_ANALYTICS_STORAGE]: 'denied',
-                        [SERVICE_FUNCTIONALITY_STORAGE]: 'denied',
-                        [SERVICE_PERSONALIZATION_STORAGE]: 'denied',
-                        [SERVICE_SECURITY_STORAGE]: 'denied',
-                    });
-                };
+                gtag('js', new Date());
+                </text>
+
+                foreach (var script in googleScripts) {
+                    if (script.Loader == BuiltInScriptLoader.GoogleAnalytics) {
+                        <text>
+                        gtag('config', '@script.Id');
+                        (function () {
+                            var s = document.createElement('script');
+                            s.src = 'https://www.googletagmanager.com/gtag/js?id=@script.Id';
+                            s.async = true;
+                            document.head.appendChild(s);
+                        })();
+                        </text>
+                    }
+                    else {
+                        <text>
+                        (function () {
+                            dataLayer.push({ 'gtm.start': new Date().getTime(), event: 'gtm.js' });
+                            var s = document.createElement('script');
+                            s.src = 'https://www.googletagmanager.com/gtm.js?id=@script.Id';
+                            s.async = true;
+                            document.head.appendChild(s);
+                        })();
+                        </text>
+                    }
+                }
+            }
+
+            @if (isFacebookPixelActivated) {
+                <text>
+                // Meta Pixel base code, loaded with consent revoked until the visitor accepts marketing
+                !function(f,b,e,v,n,t,s)
+                {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+                n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+                if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+                n.queue=[];t=b.createElement(e);t.async=!0;
+                t.src=v;s=b.getElementsByTagName(e)[0];
+                s.parentNode.insertBefore(t,s)}(window, document,'script',
+                'https://connect.facebook.net/en_US/fbevents.js');
+
+                fbq('consent', 'revoke');
+                </text>
+
+                foreach (var script in facebookScripts) {
+                    <text>
+                    fbq('init', '@script.Id');
+                    </text>
+                }
+
+                <text>
+                fbq('track', 'PageView');
                 </text>
             }
 
@@ -106,6 +160,7 @@
                     @foreach (var category in categories)
                     {
                         var isAnalytics = category.LowerName == "analytics";
+                        var isMarketing = category.LowerName == "marketing";
                         <text>@category.LowerName: {
                             readOnly: @category.IsReadOnly,
                             enabled: true,
@@ -126,6 +181,21 @@
                                     [SERVICE_ANALYTICS_STORAGE]: {
                                         label: 'Enables storage (such as cookies) related to analytics e.g. visit duration.',
                                     }
+                                }
+                                </text>
+                            }
+                            @if (isMarketing && isFacebookPixelActivated)
+                            {
+                                <text>
+                                autoClear: {
+                                    cookies: [
+                                        {
+                                            name: /^_fbp/,   // Meta Pixel first-party cookie
+                                        },
+                                        {
+                                            name: /^_fbc/,
+                                        }
+                                    ]
                                 }
                                 </text>
                             }
@@ -155,6 +225,7 @@
                                     @foreach (var category in categories)
                                     {
                                         var isAnalytics = category.LowerName == "analytics";
+                                        var isMarketing = category.LowerName == "marketing";
                                         <text>{
                                             title: "@category.Title",
                                             description: "@category.Description",
@@ -185,6 +256,32 @@
                                                     ]
                                                 }</text>
                                             }
+                                            @if (isMarketing && isFacebookPixelActivated)
+                                            {
+                                                <text>,
+                                                cookieTable: {
+                                                    headers: {
+                                                        name: "Name",
+                                                        domain: "Service",
+                                                        description: "Description",
+                                                        expiration: "Expiration"
+                                                    },
+                                                    body: [
+                                                        {
+                                                            name: "_fbp",
+                                                            domain: "Meta Pixel",
+                                                            description: "Cookie set by <a href=\"https://www.facebook.com/privacy/policy/\">Meta Pixel</a>",
+                                                            expiration: "Expires after 3 months"
+                                                        },
+                                                        {
+                                                            name: "_fbc",
+                                                            domain: "Meta Pixel",
+                                                            description: "Cookie set by <a href=\"https://www.facebook.com/privacy/policy/\">Meta Pixel</a>",
+                                                            expiration: "Expires after 3 months"
+                                                        }
+                                                    ]
+                                                }</text>
+                                            }
                                         },</text>
                                     }
                                 ]
@@ -196,14 +293,17 @@
                 onFirstConsent: () => {
                     runScripts();
                     updateGtagConsent();
+                    updateFbqConsent();
                 },
                 onConsent: () => {
                     runScripts();
                     updateGtagConsent();
+                    updateFbqConsent();
                 },
                 onChange: () => {
                     runScripts();
                     updateGtagConsent();
+                    updateFbqConsent();
                 }
             });
 
@@ -228,15 +328,26 @@
             function updateGtagConsent() {
                 if (!window.gtag) return;
 
+                // Ad and functionality categories declare no granular services, so gate them
+                // on the category itself; analytics keeps its declared service toggle
+                const marketing = CookieConsent.acceptedCategory(CAT_MARKETING);
+                const functionality = CookieConsent.acceptedCategory(CAT_FUNCTIONALITY);
+
                 gtag('consent', 'update', {
                     [SERVICE_ANALYTICS_STORAGE]: CookieConsent.acceptedService(SERVICE_ANALYTICS_STORAGE, CAT_ANALYTICS) ? 'granted' : 'denied',
-                    [SERVICE_AD_STORAGE]: CookieConsent.acceptedService(SERVICE_AD_STORAGE, CAT_ADVERTISEMENT) ? 'granted' : 'denied',
-                    [SERVICE_AD_USER_DATA]: CookieConsent.acceptedService(SERVICE_AD_USER_DATA, CAT_ADVERTISEMENT) ? 'granted' : 'denied',
-                    [SERVICE_AD_PERSONALIZATION]: CookieConsent.acceptedService(SERVICE_AD_PERSONALIZATION, CAT_ADVERTISEMENT) ? 'granted' : 'denied',
-                    [SERVICE_FUNCTIONALITY_STORAGE]: CookieConsent.acceptedService(SERVICE_FUNCTIONALITY_STORAGE, CAT_FUNCTIONALITY) ? 'granted' : 'denied',
-                    [SERVICE_PERSONALIZATION_STORAGE]: CookieConsent.acceptedService(SERVICE_PERSONALIZATION_STORAGE, CAT_FUNCTIONALITY) ? 'granted' : 'denied',
-                    [SERVICE_SECURITY_STORAGE]: CookieConsent.acceptedService(SERVICE_SECURITY_STORAGE, CAT_SECURITY) ? 'granted' : 'denied'
+                    [SERVICE_AD_STORAGE]: marketing ? 'granted' : 'denied',
+                    [SERVICE_AD_USER_DATA]: marketing ? 'granted' : 'denied',
+                    [SERVICE_AD_PERSONALIZATION]: marketing ? 'granted' : 'denied',
+                    [SERVICE_FUNCTIONALITY_STORAGE]: functionality ? 'granted' : 'denied',
+                    [SERVICE_PERSONALIZATION_STORAGE]: functionality ? 'granted' : 'denied',
+                    [SERVICE_SECURITY_STORAGE]: 'granted'
                 });
+            }
+
+            function updateFbqConsent() {
+                if (!window.fbq) return;
+
+                fbq('consent', CookieConsent.acceptedCategory(CAT_MARKETING) ? 'grant' : 'revoke');
             }
         });
         @if(cookieSettings != null && cookieSettings.MiscOptions.EnableDarkMode) {
