@@ -9,7 +9,7 @@ Easily add a configurable cookie consent banner to your Umbraco site. Features i
 ## Requirements
 
 Umbraco 13 on .NET 8  
-Umbraco 17 on .NET 10 in progress (release 23-24 July 2026)
+Umbraco 17 on .NET 10 in progress
 
 ## Installation
 

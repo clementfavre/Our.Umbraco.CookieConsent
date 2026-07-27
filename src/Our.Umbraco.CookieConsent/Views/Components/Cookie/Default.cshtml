@@ -52,10 +52,8 @@
     <script>
         window.addEventListener('load', () => {
             const CAT_ANALYTICS = "analytics";
-            const CAT_ADVERTISEMENT = "advertisement";
             const CAT_MARKETING = "marketing";
             const CAT_FUNCTIONALITY = "functionality";
-            const CAT_SECURITY = "security";
 
             const SERVICE_AD_STORAGE = 'ad_storage';
             const SERVICE_AD_USER_DATA = 'ad_user_data';
@@ -79,7 +77,7 @@
                     [SERVICE_ANALYTICS_STORAGE]: 'denied',
                     [SERVICE_FUNCTIONALITY_STORAGE]: 'denied',
                     [SERVICE_PERSONALIZATION_STORAGE]: 'denied',
-                    [SERVICE_SECURITY_STORAGE]: 'denied',
+                    [SERVICE_SECURITY_STORAGE]: 'granted',
                 });
 
                 gtag('js', new Date());
@@ -329,14 +327,19 @@
             function updateGtagConsent() {
                 if (!window.gtag) return;
 
+                // Ad and functionality categories declare no granular services, so gate them
+                // on the category itself; analytics keeps its declared service toggle
+                const marketing = CookieConsent.acceptedCategory(CAT_MARKETING);
+                const functionality = CookieConsent.acceptedCategory(CAT_FUNCTIONALITY);
+
                 gtag('consent', 'update', {
                     [SERVICE_ANALYTICS_STORAGE]: CookieConsent.acceptedService(SERVICE_ANALYTICS_STORAGE, CAT_ANALYTICS) ? 'granted' : 'denied',
-                    [SERVICE_AD_STORAGE]: CookieConsent.acceptedService(SERVICE_AD_STORAGE, CAT_ADVERTISEMENT) ? 'granted' : 'denied',
-                    [SERVICE_AD_USER_DATA]: CookieConsent.acceptedService(SERVICE_AD_USER_DATA, CAT_ADVERTISEMENT) ? 'granted' : 'denied',
-                    [SERVICE_AD_PERSONALIZATION]: CookieConsent.acceptedService(SERVICE_AD_PERSONALIZATION, CAT_ADVERTISEMENT) ? 'granted' : 'denied',
-                    [SERVICE_FUNCTIONALITY_STORAGE]: CookieConsent.acceptedService(SERVICE_FUNCTIONALITY_STORAGE, CAT_FUNCTIONALITY) ? 'granted' : 'denied',
-                    [SERVICE_PERSONALIZATION_STORAGE]: CookieConsent.acceptedService(SERVICE_PERSONALIZATION_STORAGE, CAT_FUNCTIONALITY) ? 'granted' : 'denied',
-                    [SERVICE_SECURITY_STORAGE]: CookieConsent.acceptedService(SERVICE_SECURITY_STORAGE, CAT_SECURITY) ? 'granted' : 'denied'
+                    [SERVICE_AD_STORAGE]: marketing ? 'granted' : 'denied',
+                    [SERVICE_AD_USER_DATA]: marketing ? 'granted' : 'denied',
+                    [SERVICE_AD_PERSONALIZATION]: marketing ? 'granted' : 'denied',
+                    [SERVICE_FUNCTIONALITY_STORAGE]: functionality ? 'granted' : 'denied',
+                    [SERVICE_PERSONALIZATION_STORAGE]: functionality ? 'granted' : 'denied',
+                    [SERVICE_SECURITY_STORAGE]: 'granted'
                 });
             }
 

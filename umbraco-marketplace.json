@@ -1,15 +1,15 @@
 {
   "$schema": "https://marketplace.umbraco.com/umbraco-marketplace-schema.json",
   "AuthorDetails": {
-    "Name": "Dolba",
+    "Name": "Clément Favre",
     "Description": "A web developer who became passionate about Umbraco",
-    "Url": "https://github.com/D0LBA3B",
-    "ImageUrl": "https://github.com/D0LBA3B.png"
+    "Url": "https://github.com/clementfavre",
+    "ImageUrl": "https://github.com/clementfavre.png"
   },
   "Title": "CookieConsent",
   "Description": "Easily add a configurable cookie consent banner to your site. Features include a dashboard for customization of behavior, appearance, and translations.",
-  "DocumentationUrl": "https://github.com/D0LBA3B/Our.Umbraco.CookieConsent/",
-  "IssueTrackerUrl": "https://github.com/D0LBA3B/Our.Umbraco.CookieConsent/issues",
+  "DocumentationUrl": "https://github.com/clementfavre/Our.Umbraco.CookieConsent/",
+  "IssueTrackerUrl": "https://github.com/clementfavre/Our.Umbraco.CookieConsent/issues",
   "Category": "Editor Tools",
   "LicenseTypes": ["Free"],
   "PackageType": "Package",

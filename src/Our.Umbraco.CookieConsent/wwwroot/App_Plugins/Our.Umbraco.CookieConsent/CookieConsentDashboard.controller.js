@@ -188,7 +188,6 @@
                 !vm.settings.applicableCategories[categoryName][property];
         };
 
-        // TODO: Support built-in integrations for common services like Google Analytics, Facebook Pixel
         vm.addCustomScript = function () {
             vm.settings.customScripts.push({
                 type: "Analytics",
