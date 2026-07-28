@@ -1,4 +1,4 @@
-import { css, html, nothing, repeat } from '@umbraco-cms/backoffice/external/lit';
+import { css, html, nothing, repeat, unsafeHTML } from '@umbraco-cms/backoffice/external/lit';
 import { UmbLitElement } from '@umbraco-cms/backoffice/lit-element';
 import { UmbTextStyles } from '@umbraco-cms/backoffice/style';
 import { UMB_AUTH_CONTEXT } from '@umbraco-cms/backoffice/auth';
@@ -12,85 +12,91 @@ const API_PATH = '/umbraco/management/api/v1/cookie-consent';
 // The settings expose raw category keys, the dashboard shows editor-facing wording
 const CATEGORIES = {
     necessary: {
-        name: 'Strictly necessary',
-        description: 'Needed for the site to work, so visitors are never asked about these.',
+        nameKey: 'cookieConsent_categoryNecessary',
+        descriptionKey: 'cookieConsent_categoryNecessaryDescription',
     },
     functionality: {
-        name: 'Functionality',
-        description: 'Remembers choices such as language or region.',
+        nameKey: 'cookieConsent_categoryFunctionality',
+        descriptionKey: 'cookieConsent_categoryFunctionalityDescription',
     },
     analytics: {
-        name: 'Analytics',
-        description: 'Measures how visitors browse the site.',
+        nameKey: 'cookieConsent_categoryAnalytics',
+        descriptionKey: 'cookieConsent_categoryAnalyticsDescription',
     },
     marketing: {
-        name: 'Marketing',
-        description: 'Used to show advertising based on browsing habits.',
+        nameKey: 'cookieConsent_categoryMarketing',
+        descriptionKey: 'cookieConsent_categoryMarketingDescription',
     },
 };
 
-const SCRIPT_TYPES = ['Necessary', 'Functionality', 'Analytics', 'Marketing'];
+// Reuses the category wording, so a script's trigger reads like the banner category
+const SCRIPT_TYPES = [
+    { value: 'Necessary', labelKey: 'cookieConsent_categoryNecessary' },
+    { value: 'Functionality', labelKey: 'cookieConsent_categoryFunctionality' },
+    { value: 'Analytics', labelKey: 'cookieConsent_categoryAnalytics' },
+    { value: 'Marketing', labelKey: 'cookieConsent_categoryMarketing' },
+];
 
 const CONSENT_MODAL_LAYOUTS = [
-    { value: 'Box', displayName: 'box' },
-    { value: 'BoxInline', displayName: 'box inline' },
-    { value: 'BoxWide', displayName: 'box wide' },
-    { value: 'Cloud', displayName: 'cloud' },
-    { value: 'CloudInline', displayName: 'cloud inline' },
-    { value: 'Bar', displayName: 'bar' },
-    { value: 'BarInline', displayName: 'bar inline' },
+    { value: 'Box', labelKey: 'cookieConsent_layoutBox' },
+    { value: 'BoxInline', labelKey: 'cookieConsent_layoutBoxInline' },
+    { value: 'BoxWide', labelKey: 'cookieConsent_layoutBoxWide' },
+    { value: 'Cloud', labelKey: 'cookieConsent_layoutCloud' },
+    { value: 'CloudInline', labelKey: 'cookieConsent_layoutCloudInline' },
+    { value: 'Bar', labelKey: 'cookieConsent_layoutBar' },
+    { value: 'BarInline', labelKey: 'cookieConsent_layoutBarInline' },
 ];
 
 const PREFERENCES_MODAL_LAYOUTS = [
-    { value: 'Box', displayName: 'box' },
-    { value: 'Bar', displayName: 'bar' },
-    { value: 'BarWide', displayName: 'bar wide' },
+    { value: 'Box', labelKey: 'cookieConsent_layoutBox' },
+    { value: 'Bar', labelKey: 'cookieConsent_layoutBar' },
+    { value: 'BarWide', labelKey: 'cookieConsent_layoutBarWide' },
 ];
 
 const CONSENT_MODAL_POSITIONS = [
-    { value: 'TopLeft', displayName: 'top left' },
-    { value: 'TopCenter', displayName: 'top center' },
-    { value: 'TopRight', displayName: 'top right' },
-    { value: 'MiddleLeft', displayName: 'middle left' },
-    { value: 'MiddleCenter', displayName: 'middle center' },
-    { value: 'MiddleRight', displayName: 'middle right' },
-    { value: 'BottomLeft', displayName: 'bottom left' },
-    { value: 'BottomCenter', displayName: 'bottom center' },
-    { value: 'BottomRight', displayName: 'bottom right' },
+    { value: 'TopLeft', labelKey: 'cookieConsent_positionTopLeft' },
+    { value: 'TopCenter', labelKey: 'cookieConsent_positionTopCenter' },
+    { value: 'TopRight', labelKey: 'cookieConsent_positionTopRight' },
+    { value: 'MiddleLeft', labelKey: 'cookieConsent_positionMiddleLeft' },
+    { value: 'MiddleCenter', labelKey: 'cookieConsent_positionMiddleCenter' },
+    { value: 'MiddleRight', labelKey: 'cookieConsent_positionMiddleRight' },
+    { value: 'BottomLeft', labelKey: 'cookieConsent_positionBottomLeft' },
+    { value: 'BottomCenter', labelKey: 'cookieConsent_positionBottomCenter' },
+    { value: 'BottomRight', labelKey: 'cookieConsent_positionBottomRight' },
 ];
 
 const PREFERENCES_MODAL_POSITIONS = [
-    { value: 'Left', displayName: 'left' },
-    { value: 'Right', displayName: 'right' },
+    { value: 'Left', labelKey: 'cookieConsent_positionLeft' },
+    { value: 'Right', labelKey: 'cookieConsent_positionRight' },
 ];
 
 const THEMES = [
-    { value: 'light', displayName: 'Light' },
-    { value: 'dark', displayName: 'Dark' },
+    { value: 'light', labelKey: 'cookieConsent_themeLight' },
+    { value: 'dark', labelKey: 'cookieConsent_themeDark' },
 ];
 
 // value is the contract shared with BuiltInScriptProviders.cs
 const BUILT_IN_PROVIDERS = [
     {
         value: 'GoogleAnalytics',
-        displayName: 'Google Analytics (gtag.js)',
-        idLabel: 'Measurement ID',
+        labelKey: 'cookieConsent_providerGoogleAnalytics',
+        idLabelKey: 'cookieConsent_measurementId',
         placeholder: 'G-XXXXXXXXXX',
-        note: '',
+        noteKey: '',
     },
     {
         value: 'GoogleTagManager',
-        displayName: 'Google Tag Manager',
-        idLabel: 'Container ID',
+        labelKey: 'cookieConsent_providerGoogleTagManager',
+        idLabelKey: 'cookieConsent_containerId',
         placeholder: 'GTM-XXXXXXX',
-        note: 'The package sends Google consent signals. For them to gate anything, turn on Consent settings for your tags in Tag Manager.',
+        noteKey: 'cookieConsent_providerGtmNote',
     },
     {
         value: 'FacebookPixel',
-        displayName: 'Facebook Pixel',
-        idLabel: 'Pixel ID',
+        labelKey: 'cookieConsent_providerFacebookPixel',
+        idLabelKey: 'cookieConsent_pixelId',
         placeholder: 'XXXXXXXXXXXXXXX',
-        note: 'The Pixel loads with consent revoked and is granted only when the visitor accepts the Marketing category, so keep that category enabled.',
+        noteKey: 'cookieConsent_providerFbNote',
     },
 ];
 
@@ -139,8 +145,10 @@ export class CookieConsentDashboardElement extends UmbLitElement {
         return text ? JSON.parse(text) : undefined;
     }
 
-    #notify(type, headline, message) {
-        this.#notificationContext?.peek(type, { data: { headline, message } });
+    #notify(type, headlineKey, messageKey) {
+        this.#notificationContext?.peek(type, {
+            data: { headline: this.localize.term(headlineKey), message: this.localize.term(messageKey) },
+        });
     }
 
     async #loadSettings() {
@@ -148,7 +156,7 @@ export class CookieConsentDashboardElement extends UmbLitElement {
         try {
             this.#applySettings(await this.#request('/settings'));
         } catch {
-            this.#notify('danger', 'Error', 'Failed to load settings.');
+            this.#notify('danger', 'cookieConsent_error', 'cookieConsent_loadFailed');
         } finally {
             this._loading = false;
         }
@@ -159,10 +167,10 @@ export class CookieConsentDashboardElement extends UmbLitElement {
         try {
             await this.#request('/settings', 'POST', this._settings);
             this._saveState = 'success';
-            this.#notify('positive', 'Success', 'Settings saved successfully.');
+            this.#notify('positive', 'cookieConsent_success', 'cookieConsent_saveSucceeded');
         } catch {
             this._saveState = 'failed';
-            this.#notify('danger', 'Error', 'Failed to save settings.');
+            this.#notify('danger', 'cookieConsent_error', 'cookieConsent_saveFailed');
         }
     }
 
@@ -170,9 +178,9 @@ export class CookieConsentDashboardElement extends UmbLitElement {
         this._loading = true;
         try {
             this.#applySettings(await this.#request('/settings/reset', 'POST'));
-            this.#notify('positive', 'Success', 'Settings reset to defaults.');
+            this.#notify('positive', 'cookieConsent_success', 'cookieConsent_resetSucceeded');
         } catch {
-            this.#notify('danger', 'Error', 'Failed to reset settings.');
+            this.#notify('danger', 'cookieConsent_error', 'cookieConsent_resetFailed');
         } finally {
             this._loading = false;
         }
@@ -213,18 +221,18 @@ export class CookieConsentDashboardElement extends UmbLitElement {
 
     render() {
         return html`
-            <umb-body-layout headline="Cookie Consent" .loading=${this._loading}>
+            <umb-body-layout headline=${this.localize.term('cookieConsent_headline')} .loading=${this._loading}>
                 ${this._settings ? this.#renderSettings() : nothing}
                 <div slot="actions">
                     <uui-button
                         look="secondary"
-                        label="Reset to defaults"
+                        label=${this.localize.term('cookieConsent_resetToDefaults')}
                         ?disabled=${this._loading}
                         @click=${this.#resetSettings}></uui-button>
                     <uui-button
                         look="primary"
                         color="positive"
-                        label="Save"
+                        label=${this.localize.term('cookieConsent_save')}
                         .state=${this._saveState}
                         ?disabled=${this._loading}
                         @click=${this.#saveSettings}></uui-button>
@@ -244,10 +252,8 @@ export class CookieConsentDashboardElement extends UmbLitElement {
         const categories = Object.keys(this._settings.applicableCategories ?? {});
 
         return html`
-            <uui-box headline="Cookie categories">
-                <p class="box-description">
-                    Pick the categories shown in the banner, and whether visitors can change them.
-                </p>
+            <uui-box headline=${this.localize.term('cookieConsent_categoriesTitle')}>
+                <p class="box-description">${this.localize.term('cookieConsent_categoriesDescription')}</p>
                 ${repeat(
                     categories,
                     (key) => key,
@@ -257,18 +263,20 @@ export class CookieConsentDashboardElement extends UmbLitElement {
 
                         return html`
                             <umb-property-layout
-                                label=${labels?.name ?? key}
-                                description=${labels?.description ?? ''}>
+                                label=${labels ? this.localize.term(labels.nameKey) : key}
+                                description=${labels ? this.localize.term(labels.descriptionKey) : ''}>
                                 <div slot="editor" class="toggles">
                                     <uui-toggle
-                                        label=${category.enabled ? 'Shown in the banner' : 'Hidden'}
+                                        label=${category.enabled
+                                            ? this.localize.term('cookieConsent_shownInBanner')
+                                            : this.localize.term('cookieConsent_hidden')}
                                         .checked=${category.enabled}
                                         ?disabled=${category.readOnly}
                                         @change=${() => this.#toggleEnabled(key)}></uui-toggle>
                                     <uui-toggle
                                         label=${category.readOnly
-                                            ? 'Always on, visitors cannot refuse'
-                                            : 'Visitors decide'}
+                                            ? this.localize.term('cookieConsent_alwaysOn')
+                                            : this.localize.term('cookieConsent_visitorsDecide')}
                                         .checked=${category.readOnly}
                                         @change=${() => this.#toggleReadOnly(key)}></uui-toggle>
                                 </div>
@@ -283,27 +291,25 @@ export class CookieConsentDashboardElement extends UmbLitElement {
     #renderLanguage() {
         const languages = (this._settings.availableLanguages ?? []).map((language) => ({
             value: language.value,
-            displayName: language.displayName,
+            name: language.displayName,
         }));
 
         return html`
-            <uui-box headline="Language">
-                <p class="box-description">
-                    The banner follows the visitor's language when it can be detected.
-                </p>
+            <uui-box headline=${this.localize.term('cookieConsent_languageTitle')}>
+                <p class="box-description">${this.localize.term('cookieConsent_languageDescription')}</p>
                 <umb-property-layout
-                    label="Fallback language"
-                    description="Used when the visitor's language is not available.">
+                    label=${this.localize.term('cookieConsent_fallbackLanguage')}
+                    description=${this.localize.term('cookieConsent_fallbackLanguageDescription')}>
                     <div slot="editor">
-                        ${this.#renderSelect('Fallback language', languages, this._settings.languageOptions?.defaultLanguage, (value) =>
-                            this.#update((settings) => (settings.languageOptions.defaultLanguage = value)),
+                        ${this.#renderSelect(
+                            this.localize.term('cookieConsent_fallbackLanguage'),
+                            languages,
+                            this._settings.languageOptions?.defaultLanguage,
+                            (value) => this.#update((settings) => (settings.languageOptions.defaultLanguage = value)),
                         )}
                     </div>
                 </umb-property-layout>
-                <p class="hint">
-                    The choices offered here are the languages configured in Umbraco. Wording such as the banner
-                    title lives in the Dictionary, under the <code>Our.Umbraco.CookieConsent</code> key.
-                </p>
+                <p class="hint">${unsafeHTML(this.localize.term('cookieConsent_languageHint'))}</p>
             </uui-box>
         `;
     }
@@ -313,57 +319,74 @@ export class CookieConsentDashboardElement extends UmbLitElement {
         const misc = this._settings.miscOptions ?? {};
 
         return html`
-            <uui-box headline="Appearance">
-                <p class="box-description">Where the two dialogs sit and how they look.</p>
+            <uui-box headline=${this.localize.term('cookieConsent_appearanceTitle')}>
+                <p class="box-description">${this.localize.term('cookieConsent_appearanceDescription')}</p>
 
-                <umb-property-layout label="Banner layout" description="The first dialog a visitor sees.">
+                <umb-property-layout
+                    label=${this.localize.term('cookieConsent_bannerLayout')}
+                    description=${this.localize.term('cookieConsent_bannerLayoutDescription')}>
                     <div slot="editor">
-                        ${this.#renderSelect('Banner layout', CONSENT_MODAL_LAYOUTS, gui.consentModalLayout, (value) =>
-                            this.#update((settings) => (settings.guiOptions.consentModalLayout = value)),
+                        ${this.#renderSelect(
+                            this.localize.term('cookieConsent_bannerLayout'),
+                            this.#options(CONSENT_MODAL_LAYOUTS),
+                            gui.consentModalLayout,
+                            (value) => this.#update((settings) => (settings.guiOptions.consentModalLayout = value)),
                         )}
                     </div>
                 </umb-property-layout>
 
-                <umb-property-layout label="Banner position">
+                <umb-property-layout label=${this.localize.term('cookieConsent_bannerPosition')}>
                     <div slot="editor">
-                        ${this.#renderSelect('Banner position', CONSENT_MODAL_POSITIONS, gui.consentModalPosition, (value) =>
-                            this.#update((settings) => (settings.guiOptions.consentModalPosition = value)),
+                        ${this.#renderSelect(
+                            this.localize.term('cookieConsent_bannerPosition'),
+                            this.#options(CONSENT_MODAL_POSITIONS),
+                            gui.consentModalPosition,
+                            (value) => this.#update((settings) => (settings.guiOptions.consentModalPosition = value)),
                         )}
                     </div>
                 </umb-property-layout>
 
                 <umb-property-layout
-                    label="Preferences layout"
-                    description="The dialog opened from Manage preferences.">
+                    label=${this.localize.term('cookieConsent_preferencesLayout')}
+                    description=${this.localize.term('cookieConsent_preferencesLayoutDescription')}>
                     <div slot="editor">
-                        ${this.#renderSelect('Preferences layout', PREFERENCES_MODAL_LAYOUTS, gui.preferencesModalLayout, (value) =>
-                            this.#update((settings) => (settings.guiOptions.preferencesModalLayout = value)),
+                        ${this.#renderSelect(
+                            this.localize.term('cookieConsent_preferencesLayout'),
+                            this.#options(PREFERENCES_MODAL_LAYOUTS),
+                            gui.preferencesModalLayout,
+                            (value) => this.#update((settings) => (settings.guiOptions.preferencesModalLayout = value)),
                         )}
                     </div>
                 </umb-property-layout>
 
-                <umb-property-layout label="Preferences position">
+                <umb-property-layout label=${this.localize.term('cookieConsent_preferencesPosition')}>
                     <div slot="editor">
-                        ${this.#renderSelect('Preferences position', PREFERENCES_MODAL_POSITIONS, gui.preferencesModalPosition, (value) =>
-                            this.#update((settings) => (settings.guiOptions.preferencesModalPosition = value)),
+                        ${this.#renderSelect(
+                            this.localize.term('cookieConsent_preferencesPosition'),
+                            this.#options(PREFERENCES_MODAL_POSITIONS),
+                            gui.preferencesModalPosition,
+                            (value) => this.#update((settings) => (settings.guiOptions.preferencesModalPosition = value)),
                         )}
                     </div>
                 </umb-property-layout>
 
-                <umb-property-layout label="Theme">
+                <umb-property-layout label=${this.localize.term('cookieConsent_theme')}>
                     <div slot="editor">
-                        ${this.#renderSelect('Theme', THEMES, this._settings.theme, (value) =>
-                            this.#update((settings) => (settings.theme = value)),
+                        ${this.#renderSelect(
+                            this.localize.term('cookieConsent_theme'),
+                            this.#options(THEMES),
+                            this._settings.theme,
+                            (value) => this.#update((settings) => (settings.theme = value)),
                         )}
                     </div>
                 </umb-property-layout>
 
                 <umb-property-layout
-                    label="Follow the visitor's dark mode"
-                    description="Switches to the dark theme when the visitor's system asks for it.">
+                    label=${this.localize.term('cookieConsent_followDarkMode')}
+                    description=${this.localize.term('cookieConsent_followDarkModeDescription')}>
                     <uui-toggle
                         slot="editor"
-                        aria-label="Follow the visitor's dark mode"
+                        aria-label=${this.localize.term('cookieConsent_followDarkMode')}
                         .checked=${!!misc.enableDarkMode}
                         @change=${() =>
                             this.#update(
@@ -372,11 +395,11 @@ export class CookieConsentDashboardElement extends UmbLitElement {
                 </umb-property-layout>
 
                 <umb-property-layout
-                    label="Turn off animations"
-                    description="Shows the dialogs without fading or sliding.">
+                    label=${this.localize.term('cookieConsent_disableTransitions')}
+                    description=${this.localize.term('cookieConsent_disableTransitionsDescription')}>
                     <uui-toggle
                         slot="editor"
-                        aria-label="Turn off animations"
+                        aria-label=${this.localize.term('cookieConsent_disableTransitions')}
                         .checked=${!!misc.disableTransitions}
                         @change=${() =>
                             this.#update(
@@ -386,11 +409,11 @@ export class CookieConsentDashboardElement extends UmbLitElement {
                 </umb-property-layout>
 
                 <umb-property-layout
-                    label="Block the page until a choice is made"
-                    description="Dims the site and prevents browsing until the visitor answers.">
+                    label=${this.localize.term('cookieConsent_disablePageInteraction')}
+                    description=${this.localize.term('cookieConsent_disablePageInteractionDescription')}>
                     <uui-toggle
                         slot="editor"
-                        aria-label="Block the page until a choice is made"
+                        aria-label=${this.localize.term('cookieConsent_disablePageInteraction')}
                         .checked=${!!misc.disablePageInteraction}
                         @change=${() =>
                             this.#update(
@@ -407,32 +430,33 @@ export class CookieConsentDashboardElement extends UmbLitElement {
         const scripts = this._settings.builtInScripts ?? [];
 
         return html`
-            <uui-box headline="Built-in scripts">
-                <p class="box-description">
-                    Ready-made integrations that run before consent is given. Enter the ID and the package handles
-                    the rest.
-                </p>
+            <uui-box headline=${this.localize.term('cookieConsent_builtInScriptsTitle')}>
+                <p class="box-description">${this.localize.term('cookieConsent_builtInScriptsDescription')}</p>
 
                 ${repeat(
                     scripts,
                     (_, index) => index,
                     (script, index) => {
                         const provider = this.#builtInProvider(script.provider);
+                        const idLabel = this.localize.term(provider.idLabelKey);
 
                         return html`
                             <div class="item">
-                                <umb-property-layout label="Provider">
+                                <umb-property-layout label=${this.localize.term('cookieConsent_provider')}>
                                     <div slot="editor">
-                                        ${this.#renderSelect('Provider', BUILT_IN_PROVIDERS, script.provider, (value) =>
-                                            this.#update((settings) => (settings.builtInScripts[index].provider = value)),
+                                        ${this.#renderSelect(
+                                            this.localize.term('cookieConsent_provider'),
+                                            this.#options(BUILT_IN_PROVIDERS),
+                                            script.provider,
+                                            (value) => this.#update((settings) => (settings.builtInScripts[index].provider = value)),
                                         )}
                                     </div>
                                 </umb-property-layout>
 
-                                <umb-property-layout label=${provider.idLabel}>
+                                <umb-property-layout label=${idLabel}>
                                     <uui-input
                                         slot="editor"
-                                        label=${provider.idLabel}
+                                        label=${idLabel}
                                         placeholder=${provider.placeholder}
                                         .value=${script.id ?? ''}
                                         @change=${(event) =>
@@ -441,23 +465,27 @@ export class CookieConsentDashboardElement extends UmbLitElement {
                                             )}></uui-input>
                                 </umb-property-layout>
 
-                                ${provider.note ? html`<p class="hint">${provider.note}</p>` : nothing}
+                                ${provider.noteKey
+                                    ? html`<p class="hint">${unsafeHTML(this.localize.term(provider.noteKey))}</p>`
+                                    : nothing}
 
                                 <uui-button
                                     look="secondary"
                                     color="danger"
-                                    label="Remove"
+                                    label=${this.localize.term('cookieConsent_remove')}
                                     @click=${() =>
                                         this.#update((settings) => settings.builtInScripts.splice(index, 1))}></uui-button>
                             </div>
                         `;
                     },
                 )}
-                ${scripts.length ? nothing : html`<p class="empty">No built-in script yet.</p>`}
+                ${scripts.length
+                    ? nothing
+                    : html`<p class="empty">${this.localize.term('cookieConsent_noBuiltInScript')}</p>`}
 
                 <uui-button
                     look="primary"
-                    label="Add built-in script"
+                    label=${this.localize.term('cookieConsent_addBuiltInScript')}
                     @click=${() =>
                         this.#update((settings) =>
                             settings.builtInScripts.push({ provider: 'GoogleAnalytics', id: '' }),
@@ -470,15 +498,9 @@ export class CookieConsentDashboardElement extends UmbLitElement {
         const scripts = this._settings.customScripts ?? [];
 
         return html`
-            <uui-box headline="Custom scripts">
-                <p class="box-description">
-                    Your own tracking code, run only once the visitor accepts the matching category.
-                </p>
-                <p class="hint">
-                    <strong>JavaScript only.</strong> The code runs inside a function, so a
-                    <code>&lt;script&gt;</code> tag would break it. Load an external file by creating the element
-                    yourself:
-                </p>
+            <uui-box headline=${this.localize.term('cookieConsent_customScriptsTitle')}>
+                <p class="box-description">${this.localize.term('cookieConsent_customScriptsDescription')}</p>
+                <p class="hint">${unsafeHTML(this.localize.term('cookieConsent_customScriptsHint'))}</p>
                 <umb-code-block language="JavaScript"
                     >var s = document.createElement('script');
 s.src = 'https://example.com/tag.js';
@@ -491,21 +513,21 @@ document.head.appendChild(s);</umb-code-block
                     (_, index) => index,
                     (script, index) => html`
                         <div class="item">
-                            <umb-property-layout label="Runs after the visitor accepts">
+                            <umb-property-layout label=${this.localize.term('cookieConsent_runsAfterAccept')}>
                                 <div slot="editor">
                                     ${this.#renderSelect(
-                                        'Runs after the visitor accepts',
-                                        SCRIPT_TYPES.map((type) => ({ value: type, displayName: type })),
+                                        this.localize.term('cookieConsent_runsAfterAccept'),
+                                        this.#options(SCRIPT_TYPES),
                                         script.type,
                                         (value) => this.#update((settings) => (settings.customScripts[index].type = value)),
                                     )}
                                 </div>
                             </umb-property-layout>
 
-                            <umb-property-layout label="Code">
+                            <umb-property-layout label=${this.localize.term('cookieConsent_code')}>
                                 <uui-textarea
                                     slot="editor"
-                                    label="Code"
+                                    label=${this.localize.term('cookieConsent_code')}
                                     rows="10"
                                     .value=${script.code ?? ''}
                                     @change=${(event) =>
@@ -517,17 +539,19 @@ document.head.appendChild(s);</umb-code-block
                             <uui-button
                                 look="secondary"
                                 color="danger"
-                                label="Remove"
+                                label=${this.localize.term('cookieConsent_remove')}
                                 @click=${() =>
                                     this.#update((settings) => settings.customScripts.splice(index, 1))}></uui-button>
                         </div>
                     `,
                 )}
-                ${scripts.length ? nothing : html`<p class="empty">No custom script yet.</p>`}
+                ${scripts.length
+                    ? nothing
+                    : html`<p class="empty">${this.localize.term('cookieConsent_noCustomScript')}</p>`}
 
                 <uui-button
                     look="primary"
-                    label="Add script"
+                    label=${this.localize.term('cookieConsent_addScript')}
                     @click=${() =>
                         this.#update((settings) => settings.customScripts.push({ type: 'Analytics', code: '' }))}></uui-button>
             </uui-box>
@@ -538,12 +562,17 @@ document.head.appendChild(s);</umb-code-block
         return BUILT_IN_PROVIDERS.find((provider) => provider.value === value) ?? BUILT_IN_PROVIDERS[0];
     }
 
+    // Resolves a {value, labelKey} list into the {value, name} shape the select renders
+    #options(defs) {
+        return defs.map((def) => ({ value: def.value, name: this.localize.term(def.labelKey) }));
+    }
+
     #renderSelect(label, options, selected, onChange) {
         return html`
             <uui-select
                 label=${label}
                 .options=${options.map((option) => ({
-                    name: option.displayName,
+                    name: option.name,
                     value: option.value,
                     selected: option.value === selected,
                 }))}

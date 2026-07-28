@@ -11,7 +11,7 @@
       "elementName": "cookie-consent-dashboard",
       "weight": 11,
       "meta": {
-        "label": "Cookie Consent 🍪",
+        "label": "#cookieConsent_menuLabel",
         "pathname": "cookie-consent"
       },
       "conditions": [
@@ -20,6 +20,42 @@
           "match": "Umb.Section.Settings"
         }
       ]
+    },
+    {
+      "type": "localization",
+      "alias": "Our.Umbraco.CookieConsent.Localization.En",
+      "name": "English",
+      "meta": {
+        "culture": "en"
+      },
+      "js": "/App_Plugins/Our.Umbraco.CookieConsent/localization/en.js"
+    },
+    {
+      "type": "localization",
+      "alias": "Our.Umbraco.CookieConsent.Localization.EnUs",
+      "name": "English (United States)",
+      "meta": {
+        "culture": "en-us"
+      },
+      "js": "/App_Plugins/Our.Umbraco.CookieConsent/localization/en.js"
+    },
+    {
+      "type": "localization",
+      "alias": "Our.Umbraco.CookieConsent.Localization.Fr",
+      "name": "French",
+      "meta": {
+        "culture": "fr"
+      },
+      "js": "/App_Plugins/Our.Umbraco.CookieConsent/localization/fr.js"
+    },
+    {
+      "type": "localization",
+      "alias": "Our.Umbraco.CookieConsent.Localization.De",
+      "name": "German",
+      "meta": {
+        "culture": "de"
+      },
+      "js": "/App_Plugins/Our.Umbraco.CookieConsent/localization/de.js"
     }
   ]
 }

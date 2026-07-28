@@ -1,0 +1,110 @@
+export default {
+    cookieConsent: {
+        // Dashboard chrome
+        menuLabel: `Cookie Consent 🍪`,
+        headline: `Cookie Consent`,
+
+        // Categories
+        categoriesTitle: `Cookie-Kategorien`,
+        categoriesDescription: `Wählen Sie die im Banner angezeigten Kategorien und ob Besucher sie ändern dürfen.`,
+        categoryNecessary: `Unbedingt erforderlich`,
+        categoryNecessaryDescription: `Für den Betrieb der Website nötig; Besucher werden dazu nie gefragt.`,
+        categoryFunctionality: `Funktionalität`,
+        categoryFunctionalityDescription: `Merkt sich Einstellungen wie Sprache oder Region.`,
+        categoryAnalytics: `Statistik`,
+        categoryAnalyticsDescription: `Misst, wie Besucher die Website nutzen.`,
+        categoryMarketing: `Marketing`,
+        categoryMarketingDescription: `Dient dazu, Werbung nach Surfverhalten auszuspielen.`,
+        shownInBanner: `Im Banner angezeigt`,
+        hidden: `Ausgeblendet`,
+        alwaysOn: `Immer aktiv, Ablehnung nicht möglich`,
+        visitorsDecide: `Besucher entscheiden`,
+
+        // Language
+        languageTitle: `Sprache`,
+        languageDescription: `Das Banner folgt der Sprache des Besuchers, sofern sie erkannt wird.`,
+        fallbackLanguage: `Ersatzsprache`,
+        fallbackLanguageDescription: `Wird verwendet, wenn die Sprache des Besuchers nicht verfügbar ist.`,
+        languageHint: `Die hier angebotenen Sprachen sind die in Umbraco konfigurierten. Texte wie der Banner-Titel werden im Wörterbuch unter dem Schlüssel <code>Our.Umbraco.CookieConsent</code> gepflegt.`,
+
+        // Appearance
+        appearanceTitle: `Darstellung`,
+        appearanceDescription: `Wo die beiden Dialoge sitzen und wie sie aussehen.`,
+        bannerLayout: `Banner-Layout`,
+        bannerLayoutDescription: `Der erste Dialog, den ein Besucher sieht.`,
+        bannerPosition: `Banner-Position`,
+        preferencesLayout: `Layout der Einstellungen`,
+        preferencesLayoutDescription: `Der Dialog, der über „Einstellungen verwalten" geöffnet wird.`,
+        preferencesPosition: `Position der Einstellungen`,
+        theme: `Design`,
+        themeLight: `Hell`,
+        themeDark: `Dunkel`,
+        followDarkMode: `Dunkelmodus des Besuchers übernehmen`,
+        followDarkModeDescription: `Wechselt zum dunklen Design, wenn das System des Besuchers es verlangt.`,
+        disableTransitions: `Animationen abschalten`,
+        disableTransitionsDescription: `Zeigt die Dialoge ohne Ein- und Ausblenden.`,
+        disablePageInteraction: `Seite bis zur Entscheidung sperren`,
+        disablePageInteractionDescription: `Dunkelt die Website ab und verhindert das Navigieren, bis der Besucher antwortet.`,
+
+        // Layouts, named after the Orestbida library so the docs stay readable
+        layoutBox: `Box`,
+        layoutBoxInline: `Box, Schaltflächen nebeneinander`,
+        layoutBoxWide: `Box breit`,
+        layoutCloud: `Cloud`,
+        layoutCloudInline: `Cloud, Schaltflächen nebeneinander`,
+        layoutBar: `Bar`,
+        layoutBarInline: `Bar, Schaltflächen nebeneinander`,
+        layoutBarWide: `Bar breit`,
+
+        // Positions
+        positionTopLeft: `Oben links`,
+        positionTopCenter: `Oben mittig`,
+        positionTopRight: `Oben rechts`,
+        positionMiddleLeft: `Mittig links`,
+        positionMiddleCenter: `Mittig zentriert`,
+        positionMiddleRight: `Mittig rechts`,
+        positionBottomLeft: `Unten links`,
+        positionBottomCenter: `Unten mittig`,
+        positionBottomRight: `Unten rechts`,
+        positionLeft: `Links`,
+        positionRight: `Rechts`,
+
+        // Built-in scripts
+        builtInScriptsTitle: `Integrierte Skripte`,
+        builtInScriptsDescription: `Fertige Integrationen, die vor der Einwilligung laufen. ID eintragen, den Rest übernimmt das Paket.`,
+        provider: `Anbieter`,
+        providerGoogleAnalytics: `Google Analytics (gtag.js)`,
+        providerGoogleTagManager: `Google Tag Manager`,
+        providerFacebookPixel: `Facebook Pixel`,
+        measurementId: `Mess-ID`,
+        containerId: `Container-ID`,
+        pixelId: `Pixel-ID`,
+        providerGtmNote: `Das Paket sendet die Google-Consent-Signale. Damit sie etwas blockieren, aktivieren Sie die <strong>Consent-Einstellungen</strong> Ihrer Tags im Tag Manager.`,
+        providerFbNote: `Das Pixel wird mit widerrufener Einwilligung geladen und erst freigegeben, wenn der Besucher die Kategorie <strong>Marketing</strong> akzeptiert. Lassen Sie diese Kategorie daher aktiviert.`,
+        noBuiltInScript: `Noch kein integriertes Skript.`,
+        addBuiltInScript: `Integriertes Skript hinzufügen`,
+
+        // Custom scripts
+        customScriptsTitle: `Eigene Skripte`,
+        customScriptsDescription: `Ihr eigener Tracking-Code, der erst läuft, wenn der Besucher die passende Kategorie akzeptiert.`,
+        customScriptsHint: `<strong>Nur JavaScript.</strong> Der Code läuft innerhalb einer Funktion, ein <code>&lt;script&gt;</code>-Tag würde ihn zerstören. Externe Dateien laden Sie, indem Sie das Element selbst erzeugen:`,
+        runsAfterAccept: `Läuft nach Zustimmung zu`,
+        code: `Code`,
+        noCustomScript: `Noch kein eigenes Skript.`,
+        addScript: `Skript hinzufügen`,
+
+        // Shared
+        remove: `Entfernen`,
+        resetToDefaults: `Auf Standard zurücksetzen`,
+        save: `Speichern`,
+
+        // Notifications
+        error: `Fehler`,
+        success: `Erfolg`,
+        loadFailed: `Einstellungen konnten nicht geladen werden.`,
+        saveSucceeded: `Einstellungen gespeichert.`,
+        saveFailed: `Einstellungen konnten nicht gespeichert werden.`,
+        resetSucceeded: `Einstellungen auf Standard zurückgesetzt.`,
+        resetFailed: `Einstellungen konnten nicht zurückgesetzt werden.`,
+    },
+};
