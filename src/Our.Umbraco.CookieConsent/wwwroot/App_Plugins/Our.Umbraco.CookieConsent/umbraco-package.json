@@ -9,7 +9,7 @@
       "name": "Cookie Consent Dashboard",
       "element": "/App_Plugins/Our.Umbraco.CookieConsent/cookie-consent-dashboard.js",
       "elementName": "cookie-consent-dashboard",
-      "weight": 11,
+      "weight": 1000,
       "meta": {
         "label": "#cookieConsent_menuLabel",
         "pathname": "cookie-consent"
