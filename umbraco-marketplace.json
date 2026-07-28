@@ -21,15 +21,15 @@
   ],
   "Screenshots": [
     {
-      "ImageUrl": "https://raw.githubusercontent.com/clementfavre/Our.Umbraco.CookieConsent/master/docs/consent-preferences.png",
+      "ImageUrl": "https://raw.githubusercontent.com/clementfavre/Our.Umbraco.CookieConsent/17.0.0/docs/consent-preferences.png",
       "Caption": "Consent banner and preferences modal with per-category cookie details"
     },
     {
-      "ImageUrl": "https://raw.githubusercontent.com/clementfavre/Our.Umbraco.CookieConsent/master/docs/dashboard-categories.png",
+      "ImageUrl": "https://raw.githubusercontent.com/clementfavre/Our.Umbraco.CookieConsent/17.0.0/docs/dashboard-categories.png",
       "Caption": "Dashboard: choose the categories shown in the banner, whether visitors can change them, and the language"
     },
     {
-      "ImageUrl": "https://raw.githubusercontent.com/clementfavre/Our.Umbraco.CookieConsent/master/docs/dashboard-built-in-scripts.png",
+      "ImageUrl": "https://raw.githubusercontent.com/clementfavre/Our.Umbraco.CookieConsent/17.0.0/docs/dashboard-built-in-scripts.png",
       "Caption": "Built-in scripts: add Google Analytics, Google Tag Manager or Facebook Pixel with Consent Mode handled for you"
     }
   ],
