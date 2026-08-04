@@ -5,26 +5,31 @@
     <div ng-if="!vm.loading">
 
         <umb-box>
+            <umb-box-header title-key="cookieConsent_previewHeading"></umb-box-header>
+            <umb-box-content>
+                <div id="cc-preview-root" class="cc-preview__stage" ng-show="!vm.previewTabOpen"></div>
+                <umb-empty-state ng-if="vm.previewTabOpen" size="small">{{vm.t.previewTabOpenHint}}</umb-empty-state>
+                <div class="cc-preview__actions" ng-if="!vm.previewTabOpen">
+                    <umb-button action="vm.openPreviewTab()"
+                                type="button"
+                                button-style="link"
+                                label="{{vm.t.previewOpenTab}}"></umb-button>
+                </div>
+            </umb-box-content>
+        </umb-box>
+
+        <umb-box>
             <umb-box-header title-key="cookieConsent_categoriesTitle"
                             description-key="cookieConsent_categoriesDescription"></umb-box-header>
             <umb-box-content>
                 <umb-control-group ng-repeat="(key, category) in vm.settings.applicableCategories"
                                    label="{{vm.categoryLabel(key)}}"
                                    description="{{vm.categoryDescription(key)}}">
-                    <div class="cookieconsent-toggles">
-                        <umb-toggle checked="category.item1"
-                                    disabled="category.item2"
-                                    on-click="vm.toggleCategory(key, 'item1')"
-                                    show-labels="true"
-                                    label-on="{{vm.t.shownInBanner}}"
-                                    label-off="{{vm.t.hidden}}"></umb-toggle>
-
-                        <umb-toggle checked="category.item2"
-                                    on-click="vm.toggleCategory(key, 'item2')"
-                                    show-labels="true"
-                                    label-on="{{vm.t.alwaysOn}}"
-                                    label-off="{{vm.t.visitorsDecide}}"></umb-toggle>
-                    </div>
+                    <select class="umb-property-editor umb-dropdown cookieconsent-state-select"
+                            ng-model="category.state"
+                            ng-change="vm.applyCategoryState(key, category)"
+                            ng-disabled="vm.categoryLocked(key)"
+                            ng-options="opt.value as vm.t[opt.textKey] for opt in vm.categoryStateOptions"></select>
                 </umb-control-group>
             </umb-box-content>
         </umb-box>
@@ -45,8 +50,8 @@
         </umb-box>
 
         <umb-box>
-            <umb-box-header title-key="cookieConsent_appearanceTitle"
-                            description-key="cookieConsent_appearanceDescription"></umb-box-header>
+            <umb-box-header title-key="cookieConsent_appearanceBannerTitle"
+                            description-key="cookieConsent_appearanceBannerDesc"></umb-box-header>
             <umb-box-content>
                 <umb-control-group label="@cookieConsent_bannerLayout"
                                    description="@cookieConsent_bannerLayoutDescription">
@@ -60,7 +65,13 @@
                             ng-model="vm.settings.guiOptions.consentModalPosition"
                             ng-options="position.value as vm.t[position.textKey] for position in vm.enums.consentModalPositions"></select>
                 </umb-control-group>
+            </umb-box-content>
+        </umb-box>
 
+        <umb-box>
+            <umb-box-header title-key="cookieConsent_appearancePreferencesTitle"
+                            description-key="cookieConsent_appearancePreferencesDesc"></umb-box-header>
+            <umb-box-content>
                 <umb-control-group label="@cookieConsent_preferencesLayout"
                                    description="@cookieConsent_preferencesLayoutDescription">
                     <select class="umb-property-editor umb-dropdown"
@@ -73,7 +84,12 @@
                             ng-model="vm.settings.guiOptions.preferencesModalPosition"
                             ng-options="position.value as vm.t[position.textKey] for position in vm.enums.preferencesModalPositions"></select>
                 </umb-control-group>
+            </umb-box-content>
+        </umb-box>
 
+        <umb-box>
+            <umb-box-header title-key="cookieConsent_appearanceBehaviourTitle"></umb-box-header>
+            <umb-box-content>
                 <umb-control-group label="@cookieConsent_theme">
                     <select class="umb-property-editor umb-dropdown"
                             ng-model="vm.settings.theme"
@@ -116,7 +132,7 @@
                     <input type="number"
                            min="0"
                            step="1"
-                           class="umb-property-editor umb-textstring"
+                           class="umb-property-editor umb-textstring cookieconsent-revision"
                            ng-model="vm.settings.complianceOptions.revision" />
                 </umb-control-group>
 
@@ -156,9 +172,14 @@
                        ng-if="item.provider === 'GoogleTagManager'"
                        ng-bind-html="vm.t.providerGtmNote"></p>
 
-                    <p class="cookieconsent-hint"
-                       ng-if="item.provider === 'FacebookPixel'"
-                       ng-bind-html="vm.t.providerFbNote"></p>
+                    <div ng-if="item.provider === 'FacebookPixel'">
+                        <p class="cookieconsent-hint" ng-bind-html="vm.t.providerFbNote"></p>
+                        <div class="cookieconsent-dependency">
+                            <umb-badge size="s" color="{{vm.marketingHidden() ? 'warning' : 'success'}}">
+                                {{vm.marketingHidden() ? vm.t.marketingRequired : vm.t.marketingActive}}
+                            </umb-badge>
+                        </div>
+                    </div>
 
                     <umb-button action="vm.removeBuiltInScript($index)"
                                 type="button"
@@ -166,9 +187,9 @@
                                 label="{{vm.t.remove}}"></umb-button>
                 </div>
 
-                <p class="cookieconsent-empty" ng-if="!vm.settings.builtInScripts.length">
+                <umb-empty-state ng-if="!vm.settings.builtInScripts.length" size="small">
                     {{vm.t.noBuiltInScript}}
-                </p>
+                </umb-empty-state>
 
                 <umb-button action="vm.addBuiltInScript()"
                             type="button"
@@ -207,9 +228,9 @@ document.head.appendChild(s);</pre>
                                 label="{{vm.t.remove}}"></umb-button>
                 </div>
 
-                <p class="cookieconsent-empty" ng-if="!vm.settings.customScripts.length">
+                <umb-empty-state ng-if="!vm.settings.customScripts.length" size="small">
                     {{vm.t.noCustomScript}}
-                </p>
+                </umb-empty-state>
 
                 <umb-button action="vm.addCustomScript()"
                             type="button"

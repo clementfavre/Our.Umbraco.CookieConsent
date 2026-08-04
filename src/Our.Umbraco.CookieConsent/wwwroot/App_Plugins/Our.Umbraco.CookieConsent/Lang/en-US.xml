@@ -19,6 +19,20 @@
     <key alias="hidden">Hidden</key>
     <key alias="alwaysOn">Always on, visitors cannot refuse</key>
     <key alias="visitorsDecide">Visitors decide</key>
+    <key alias="categoryStateHidden">Hidden from the banner</key>
+    <key alias="categoryStateOptional">Optional, visitors decide</key>
+    <key alias="categoryStateAlways">Always on</key>
+    <key alias="marketingRequired">Marketing category hidden, the Pixel cannot fire</key>
+    <key alias="marketingActive">Marketing category active</key>
+    <key alias="previewHeading">Live preview</key>
+    <key alias="previewNote">The real banner, updating as you change the settings. Sample wording, the live texts come from the Dictionary.</key>
+    <key alias="previewTitle">We use cookies</key>
+    <key alias="previewDescription">This site uses cookies to improve your experience.</key>
+    <key alias="previewAcceptAll">Accept all</key>
+    <key alias="previewRejectAll">Reject all</key>
+    <key alias="previewManage">Manage preferences</key>
+    <key alias="previewOpenTab">Open in a new tab</key>
+    <key alias="previewTabOpenHint">The preview is open in a tab and updates there. Close the tab to see it here again.</key>
 
     <!-- Language -->
     <key alias="languageTitle">Language</key>
@@ -30,6 +44,11 @@
     <!-- Appearance -->
     <key alias="appearanceTitle">Appearance</key>
     <key alias="appearanceDescription">Where the two dialogs sit and how they look.</key>
+    <key alias="appearanceBannerTitle">Consent banner</key>
+    <key alias="appearanceBannerDesc">The first dialog a visitor sees.</key>
+    <key alias="appearancePreferencesTitle">Preferences dialog</key>
+    <key alias="appearancePreferencesDesc">Opened from the Manage preferences button.</key>
+    <key alias="appearanceBehaviourTitle">Theme &amp; visual behaviour</key>
     <key alias="bannerLayout">Banner layout</key>
     <key alias="bannerLayoutDescription">The first dialog a visitor sees.</key>
     <key alias="bannerPosition">Banner position</key>

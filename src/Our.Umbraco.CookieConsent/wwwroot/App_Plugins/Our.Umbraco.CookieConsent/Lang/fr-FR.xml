@@ -19,6 +19,20 @@
     <key alias="hidden">Masquée</key>
     <key alias="alwaysOn">Toujours active, refus impossible</key>
     <key alias="visitorsDecide">Au choix du visiteur</key>
+    <key alias="categoryStateHidden">Masquée du bandeau</key>
+    <key alias="categoryStateOptional">Optionnelle, au choix du visiteur</key>
+    <key alias="categoryStateAlways">Toujours active</key>
+    <key alias="marketingRequired">Catégorie Marketing masquée, le Pixel ne pourra pas se déclencher</key>
+    <key alias="marketingActive">Catégorie Marketing active</key>
+    <key alias="previewHeading">Aperçu en direct</key>
+    <key alias="previewNote">Le vrai banner, mis à jour quand vous changez les réglages. Textes d'exemple, les textes réels viennent du Dictionnaire.</key>
+    <key alias="previewTitle">Nous utilisons des cookies</key>
+    <key alias="previewDescription">Ce site utilise des cookies pour améliorer votre expérience.</key>
+    <key alias="previewAcceptAll">Tout accepter</key>
+    <key alias="previewRejectAll">Tout refuser</key>
+    <key alias="previewManage">Gérer les préférences</key>
+    <key alias="previewOpenTab">Ouvrir dans un nouvel onglet</key>
+    <key alias="previewTabOpenHint">L'aperçu est ouvert dans un onglet et se met à jour là-bas. Fermez l'onglet pour le revoir ici.</key>
 
     <!-- Language -->
     <key alias="languageTitle">Langue</key>
@@ -29,6 +43,11 @@
 
     <!-- Appearance -->
     <key alias="appearanceTitle">Apparence</key>
+    <key alias="appearanceBannerTitle">Bandeau de consentement</key>
+    <key alias="appearanceBannerDesc">La première fenêtre que voit le visiteur.</key>
+    <key alias="appearancePreferencesTitle">Fenêtre de préférences</key>
+    <key alias="appearancePreferencesDesc">Ouverte depuis « Gérer les préférences ».</key>
+    <key alias="appearanceBehaviourTitle">Thème &amp; comportement visuel</key>
     <key alias="appearanceDescription">L'emplacement et l'aspect des deux fenêtres.</key>
     <key alias="bannerLayout">Disposition du bandeau</key>
     <key alias="bannerLayoutDescription">La première fenêtre que voit le visiteur.</key>

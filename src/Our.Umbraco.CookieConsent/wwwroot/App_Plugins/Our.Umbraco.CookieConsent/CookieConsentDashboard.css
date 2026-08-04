@@ -4,12 +4,6 @@
     padding-bottom: 80px;
 }
 
-.cookieconsent-toggles {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px 40px;
-}
-
 .cookieconsent-item {
     border: 1px solid #d8d7d9;
     border-radius: 3px;
@@ -27,12 +21,6 @@
     text-decoration: underline;
 }
 
-.cookieconsent-empty {
-    color: #868689;
-    font-style: italic;
-    margin-bottom: 15px;
-}
-
 .cookieconsent-example {
     max-width: 65ch;
     white-space: pre-wrap;
@@ -47,3 +35,31 @@
     width: 100%;
     font-family: Consolas, Monaco, monospace;
 }
+
+.cookieconsent-state-select {
+    min-width: 220px;
+}
+
+.cookieconsent-revision {
+    max-width: 120px;
+}
+
+.cookieconsent-dependency {
+    margin: 8px 0 4px;
+}
+
+/* Live preview. transform makes the stage a containing block so the fixed banner stays inside it */
+.cc-preview__stage {
+    position: relative;
+    overflow: hidden;
+    height: 420px;
+    border-radius: 8px;
+    border: 1px solid #d8d7d9;
+    background: #f3f4f7;
+    transform: translateZ(0);
+}
+.cc-preview__stage.cc--darkmode {
+    background: #171a21;
+    border-color: #2a2e37;
+}
+.cc-preview__actions { margin-top: 10px; }

@@ -19,6 +19,20 @@
     <key alias="hidden">Ausgeblendet</key>
     <key alias="alwaysOn">Immer aktiv, Ablehnung nicht möglich</key>
     <key alias="visitorsDecide">Besucher entscheiden</key>
+    <key alias="categoryStateHidden">Im Banner ausgeblendet</key>
+    <key alias="categoryStateOptional">Optional, Besucher entscheiden</key>
+    <key alias="categoryStateAlways">Immer aktiv</key>
+    <key alias="marketingRequired">Marketing-Kategorie ausgeblendet, der Pixel kann nicht ausgelöst werden</key>
+    <key alias="marketingActive">Marketing-Kategorie aktiv</key>
+    <key alias="previewHeading">Live-Vorschau</key>
+    <key alias="previewNote">Das echte Banner, aktualisiert bei Änderungen. Beispieltexte, die echten Texte stammen aus dem Wörterbuch.</key>
+    <key alias="previewTitle">Wir verwenden Cookies</key>
+    <key alias="previewDescription">Diese Website verwendet Cookies, um Ihr Erlebnis zu verbessern.</key>
+    <key alias="previewAcceptAll">Alle akzeptieren</key>
+    <key alias="previewRejectAll">Alle ablehnen</key>
+    <key alias="previewManage">Einstellungen verwalten</key>
+    <key alias="previewOpenTab">In neuem Tab öffnen</key>
+    <key alias="previewTabOpenHint">Die Vorschau ist in einem Tab geöffnet und aktualisiert sich dort. Schließen Sie den Tab, um sie wieder hier zu sehen.</key>
 
     <!-- Language -->
     <key alias="languageTitle">Sprache</key>
@@ -29,6 +43,11 @@
 
     <!-- Appearance -->
     <key alias="appearanceTitle">Darstellung</key>
+    <key alias="appearanceBannerTitle">Consent-Banner</key>
+    <key alias="appearanceBannerDesc">Das erste Fenster, das ein Besucher sieht.</key>
+    <key alias="appearancePreferencesTitle">Einstellungsdialog</key>
+    <key alias="appearancePreferencesDesc">Wird über die Schaltfläche Einstellungen verwalten geöffnet.</key>
+    <key alias="appearanceBehaviourTitle">Design &amp; visuelles Verhalten</key>
     <key alias="appearanceDescription">Wo die beiden Dialoge sitzen und wie sie aussehen.</key>
     <key alias="bannerLayout">Banner-Layout</key>
     <key alias="bannerLayoutDescription">Der erste Dialog, den ein Besucher sieht.</key>

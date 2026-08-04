@@ -1,8 +1,10 @@
-﻿{
+{
   "javascript": [
+    "~/libraries/cookieconsent-orestbida/cookieconsent.umd.min.js",
     "~/App_Plugins/Our.Umbraco.CookieConsent/CookieConsentDashboard.controller.js"
   ],
   "css": [
+    "~/libraries/cookieconsent-orestbida/cookieconsent.min.css",
     "~/App_Plugins/Our.Umbraco.CookieConsent/CookieConsentDashboard.css"
   ]
 
