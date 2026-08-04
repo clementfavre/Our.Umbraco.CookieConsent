@@ -17,6 +17,11 @@
         "followDarkMode", "followDarkModeDescription",
         "disableTransitions", "disableTransitionsDescription",
         "disablePageInteraction", "disablePageInteractionDescription",
+        "complianceTitle", "complianceDescription",
+        "consentMode", "consentModeDescription", "modeOptIn", "modeOptOut",
+        "revision", "revisionDescription",
+        "autoShow", "autoShowDescription",
+        "hideFromBots", "hideFromBotsDescription",
         "layoutBox", "layoutBoxInline", "layoutBoxWide", "layoutCloud", "layoutCloudInline",
         "layoutBar", "layoutBarInline", "layoutBarWide",
         "positionTopLeft", "positionTopCenter", "positionTopRight",
@@ -104,6 +109,10 @@
                 { value: 'light', textKey: 'themeLight' },
                 { value: 'dark', textKey: 'themeDark' }
             ],
+            consentModes: [
+                { value: 'OptIn', textKey: 'modeOptIn' },
+                { value: 'OptOut', textKey: 'modeOptOut' }
+            ],
             builtInScriptProviders: [
                 { value: 'GoogleAnalytics', textKey: 'providerGoogleAnalytics', placeholder: 'G-XXXXXXXXXX', labelKey: 'measurementId' },
                 { value: 'GoogleTagManager', textKey: 'providerGoogleTagManager', placeholder: 'GTM-XXXXXXX', labelKey: 'containerId' },
@@ -143,6 +152,12 @@
                     vm.settings = response.data;
                     vm.settings.customScripts = vm.settings.customScripts || [];
                     vm.settings.builtInScripts = vm.settings.builtInScripts || [];
+                    vm.settings.complianceOptions = vm.settings.complianceOptions || {
+                        revision: 0,
+                        mode: 'OptIn',
+                        autoShow: true,
+                        hideFromBots: true
+                    };
                 })
                 .catch(function () {
                     notificationsService.error(vm.t.error, vm.t.loadFailed);

@@ -46,6 +46,20 @@
     <key alias="disablePageInteraction">Bloquer la page jusqu'au choix</key>
     <key alias="disablePageInteractionDescription">Assombrit le site et empêche la navigation tant que le visiteur n'a pas répondu.</key>
 
+    <!-- Compliance / behaviour -->
+    <key alias="complianceTitle">Comportement et conformité</key>
+    <key alias="complianceDescription">Mode de consentement, versioning et affichage du bandeau.</key>
+    <key alias="consentMode">Mode de consentement</key>
+    <key alias="consentModeDescription">Opt-in : les scripts non essentiels restent inactifs tant que le visiteur n'a pas accepté (RGPD). Opt-out : ils s'exécutent jusqu'au refus du visiteur.</key>
+    <key alias="modeOptIn">Opt-in (demander avant)</key>
+    <key alias="modeOptOut">Opt-out (exécuter jusqu'au refus)</key>
+    <key alias="revision">Révision du consentement</key>
+    <key alias="revisionDescription">Augmentez ce numéro à chaque modification de votre politique cookies pour redemander le consentement. 0 désactive le versioning.</key>
+    <key alias="autoShow">Afficher le bandeau automatiquement</key>
+    <key alias="autoShowDescription">Affiche le bandeau dès la première visite. Désactivez pour ne l'afficher que depuis votre propre déclencheur.</key>
+    <key alias="hideFromBots">Masquer aux robots</key>
+    <key alias="hideFromBotsDescription">N'affiche pas le bandeau pour les robots et crawlers détectés.</key>
+
     <!-- Layouts, named after the Orestbida library so the docs stay readable -->
     <key alias="layoutBox">Box</key>
     <key alias="layoutBoxInline">Box, boutons alignés</key>

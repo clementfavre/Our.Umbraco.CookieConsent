@@ -46,6 +46,20 @@
     <key alias="disablePageInteraction">Block the page until a choice is made</key>
     <key alias="disablePageInteractionDescription">Dims the site and prevents browsing until the visitor answers.</key>
 
+    <!-- Compliance / behaviour -->
+    <key alias="complianceTitle">Behaviour and compliance</key>
+    <key alias="complianceDescription">Consent mode, versioning and how the banner shows up.</key>
+    <key alias="consentMode">Consent mode</key>
+    <key alias="consentModeDescription">Opt-in keeps non-essential scripts off until the visitor accepts (GDPR). Opt-out runs them until the visitor refuses.</key>
+    <key alias="modeOptIn">Opt-in (ask before)</key>
+    <key alias="modeOptOut">Opt-out (run until refused)</key>
+    <key alias="revision">Consent revision</key>
+    <key alias="revisionDescription">Increase this number whenever your cookie policy changes to ask visitors for consent again. 0 disables versioning.</key>
+    <key alias="autoShow">Show the banner automatically</key>
+    <key alias="autoShowDescription">Displays the banner on the first visit. Turn off to show it only from your own trigger.</key>
+    <key alias="hideFromBots">Hide from bots</key>
+    <key alias="hideFromBotsDescription">Skips the banner for detected crawlers and bots.</key>
+
     <!-- Layouts, named after the Orestbida library so the docs stay readable -->
     <key alias="layoutBox">Box</key>
     <key alias="layoutBoxInline">Box inline</key>

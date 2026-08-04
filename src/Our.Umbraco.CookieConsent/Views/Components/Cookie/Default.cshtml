@@ -44,6 +44,14 @@
 
     bool isGoogleConsentModeActivated = googleScripts.Any();
     bool isFacebookPixelActivated = facebookScripts.Any();
+
+    var compliance = cookieSettings.ComplianceOptions ?? new ComplianceOptionsModel
+    {
+        Revision = 0,
+        Mode = ConsentMode.OptIn,
+        AutoShow = true,
+        HideFromBots = true
+    };
 }
 @if (cookieSettings is not null)
 {
@@ -140,6 +148,10 @@
                 autoclear_cookies: true,
                 cookie_name: 'umbraco_cookieconsent',
                 cookie_expiration: 31,
+                mode: '@compliance.Mode.GetDisplayName()',
+                revision: @compliance.Revision,
+                autoShow: @(compliance.AutoShow ? "true" : "false"),
+                hideFromBots: @(compliance.HideFromBots ? "true" : "false"),
                 guiOptions: {
                     consentModal: {
                         layout: "@cookieSettings?.GuiOptions.ConsentModalLayout.GetDisplayName()",

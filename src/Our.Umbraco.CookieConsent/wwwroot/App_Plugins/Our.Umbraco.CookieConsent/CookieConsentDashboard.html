@@ -101,6 +101,40 @@
         </umb-box>
 
         <umb-box>
+            <umb-box-header title-key="cookieConsent_complianceTitle"
+                            description-key="cookieConsent_complianceDescription"></umb-box-header>
+            <umb-box-content>
+                <umb-control-group label="@cookieConsent_consentMode"
+                                   description="@cookieConsent_consentModeDescription">
+                    <select class="umb-property-editor umb-dropdown"
+                            ng-model="vm.settings.complianceOptions.mode"
+                            ng-options="mode.value as vm.t[mode.textKey] for mode in vm.enums.consentModes"></select>
+                </umb-control-group>
+
+                <umb-control-group label="@cookieConsent_revision"
+                                   description="@cookieConsent_revisionDescription">
+                    <input type="number"
+                           min="0"
+                           step="1"
+                           class="umb-property-editor umb-textstring"
+                           ng-model="vm.settings.complianceOptions.revision" />
+                </umb-control-group>
+
+                <umb-control-group label="@cookieConsent_autoShow"
+                                   description="@cookieConsent_autoShowDescription">
+                    <umb-toggle checked="vm.settings.complianceOptions.autoShow"
+                                on-click="vm.settings.complianceOptions.autoShow = !vm.settings.complianceOptions.autoShow"></umb-toggle>
+                </umb-control-group>
+
+                <umb-control-group label="@cookieConsent_hideFromBots"
+                                   description="@cookieConsent_hideFromBotsDescription">
+                    <umb-toggle checked="vm.settings.complianceOptions.hideFromBots"
+                                on-click="vm.settings.complianceOptions.hideFromBots = !vm.settings.complianceOptions.hideFromBots"></umb-toggle>
+                </umb-control-group>
+            </umb-box-content>
+        </umb-box>
+
+        <umb-box>
             <umb-box-header title-key="cookieConsent_builtInScriptsTitle"
                             description-key="cookieConsent_builtInScriptsDescription"></umb-box-header>
             <umb-box-content>

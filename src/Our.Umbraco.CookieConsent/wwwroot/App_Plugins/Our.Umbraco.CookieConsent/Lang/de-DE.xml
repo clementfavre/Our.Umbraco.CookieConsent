@@ -46,6 +46,20 @@
     <key alias="disablePageInteraction">Seite bis zur Entscheidung sperren</key>
     <key alias="disablePageInteractionDescription">Dunkelt die Website ab und verhindert das Navigieren, bis der Besucher antwortet.</key>
 
+    <!-- Compliance / behaviour -->
+    <key alias="complianceTitle">Verhalten und Compliance</key>
+    <key alias="complianceDescription">Einwilligungsmodus, Versionierung und Anzeige des Banners.</key>
+    <key alias="consentMode">Einwilligungsmodus</key>
+    <key alias="consentModeDescription">Opt-in: Nicht notwendige Skripte bleiben aus, bis der Besucher zustimmt (DSGVO). Opt-out: Sie laufen, bis der Besucher ablehnt.</key>
+    <key alias="modeOptIn">Opt-in (vorher fragen)</key>
+    <key alias="modeOptOut">Opt-out (bis zur Ablehnung ausführen)</key>
+    <key alias="revision">Einwilligungsrevision</key>
+    <key alias="revisionDescription">Erhöhen Sie diese Nummer bei jeder Änderung Ihrer Cookie-Richtlinie, um erneut um Einwilligung zu bitten. 0 deaktiviert die Versionierung.</key>
+    <key alias="autoShow">Banner automatisch anzeigen</key>
+    <key alias="autoShowDescription">Zeigt das Banner beim ersten Besuch. Ausschalten, um es nur über einen eigenen Auslöser anzuzeigen.</key>
+    <key alias="hideFromBots">Vor Bots verbergen</key>
+    <key alias="hideFromBotsDescription">Überspringt das Banner für erkannte Crawler und Bots.</key>
+
     <!-- Layouts, named after the Orestbida library so the docs stay readable -->
     <key alias="layoutBox">Box</key>
     <key alias="layoutBoxInline">Box, Schaltflächen nebeneinander</key>

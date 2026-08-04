@@ -90,6 +90,16 @@ namespace Our.Umbraco.CookieConsent.Services
                 return GetDefaultSettings();
 
             settings.AvailableLanguages = GetAvailableLanguages();
+
+            // Backfill: settings stored before this version don't have this block
+            settings.ComplianceOptions ??= new ComplianceOptionsModel
+            {
+                Revision = 0,
+                Mode = ConsentMode.OptIn,
+                AutoShow = true,
+                HideFromBots = true
+            };
+
             return settings;
         }
 
@@ -195,6 +205,13 @@ namespace Our.Umbraco.CookieConsent.Services
                     EnableDarkMode = false,
                     DisableTransitions = false,
                     DisablePageInteraction = false
+                },
+                ComplianceOptions = new ComplianceOptionsModel
+                {
+                    Revision = 0,
+                    Mode = ConsentMode.OptIn,
+                    AutoShow = true,
+                    HideFromBots = true
                 },
                 CustomScripts = new (),
                 BuiltInScripts = new ()
