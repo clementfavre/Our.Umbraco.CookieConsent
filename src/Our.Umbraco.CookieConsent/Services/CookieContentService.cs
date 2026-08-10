@@ -206,6 +206,13 @@ namespace Our.Umbraco.CookieConsent.Services
                     DisableTransitions = false,
                     DisablePageInteraction = false
                 },
+                ComplianceOptions = new ComplianceOptionsModel
+                {
+                    Revision = 0,
+                    Mode = ConsentMode.OptIn,
+                    AutoShow = true,
+                    HideFromBots = true
+                },
                 CustomScripts = new(),
                 BuiltInScripts = new()
             };

@@ -8,6 +8,7 @@ public class CookieConsentSettingsModel
     public LanguageOptionsModel LanguageOptions { get; set; } = new();
     public GuiOptionsModel GuiOptions { get; set; } = new();
     public MiscOptionsModel MiscOptions { get; set; } = new();
+    public ComplianceOptionsModel ComplianceOptions { get; set; } = new();
     public string Theme { get; set; } = "light";
     public List<ScriptOptionsModel> CustomScripts { get; set; } = new();
     public List<BuiltInScriptOptionsModel> BuiltInScripts { get; set; } = new();

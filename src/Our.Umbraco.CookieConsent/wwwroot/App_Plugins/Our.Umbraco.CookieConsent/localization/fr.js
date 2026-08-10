@@ -46,6 +46,32 @@ export default {
         disablePageInteraction: `Bloquer la page jusqu'au choix`,
         disablePageInteractionDescription: `Assombrit le site et empêche la navigation tant que le visiteur n'a pas répondu.`,
 
+        // Comportement et conformité
+        complianceTitle: `Comportement et conformité`,
+        complianceDescription: `Mode de consentement, versioning et affichage du bandeau.`,
+        consentMode: `Mode de consentement`,
+        consentModeDescription: `Opt-in : les scripts non essentiels restent inactifs tant que le visiteur n'a pas accepté (RGPD). Opt-out : ils s'exécutent jusqu'au refus du visiteur.`,
+        modeOptIn: `Opt-in (demander avant)`,
+        modeOptOut: `Opt-out (exécuter jusqu'au refus)`,
+        revision: `Révision du consentement`,
+        revisionDescription: `Augmentez ce numéro à chaque modification de votre politique cookies pour redemander le consentement. 0 désactive le versioning.`,
+        autoShow: `Afficher le bandeau automatiquement`,
+        autoShowDescription: `Affiche le bandeau dès la première visite. Désactivez pour ne l'afficher que depuis votre propre déclencheur.`,
+        hideFromBots: `Masquer aux robots`,
+        hideFromBotsDescription: `N'affiche pas le bandeau pour les robots et crawlers détectés.`,
+
+        // Aperçu en direct
+        previewHeading: `Aperçu en direct`,
+        previewNote: `La vraie bannière, mise à jour quand vous changez les réglages. Textes d'exemple, les textes réels viennent du Dictionnaire.`,
+        previewTitle: `Nous utilisons des cookies`,
+        previewDescription: `Ce site utilise des cookies pour améliorer votre expérience.`,
+        previewAcceptAll: `Tout accepter`,
+        previewRejectAll: `Tout refuser`,
+        previewManage: `Gérer les préférences`,
+        previewOpenTab: `Ouvrir dans un nouvel onglet`,
+        previewTabOpenHint: `L'aperçu est ouvert dans un onglet et se met à jour là-bas. Fermez l'onglet pour le revoir ici.`,
+        previewTabBlocked: `Le navigateur a bloqué l'onglet d'aperçu. Autorisez les fenêtres pop-up pour ce site et réessayez.`,
+
         // Layouts, named after the Orestbida library so the docs stay readable
         layoutBox: `Box`,
         layoutBoxInline: `Box, boutons alignés`,

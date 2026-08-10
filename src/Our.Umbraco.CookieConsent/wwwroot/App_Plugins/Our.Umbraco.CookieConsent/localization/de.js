@@ -46,6 +46,32 @@ export default {
         disablePageInteraction: `Seite bis zur Entscheidung sperren`,
         disablePageInteractionDescription: `Dunkelt die Website ab und verhindert das Navigieren, bis der Besucher antwortet.`,
 
+        // Verhalten und Compliance
+        complianceTitle: `Verhalten und Compliance`,
+        complianceDescription: `Einwilligungsmodus, Versionierung und Anzeige des Banners.`,
+        consentMode: `Einwilligungsmodus`,
+        consentModeDescription: `Opt-in: Nicht notwendige Skripte bleiben aus, bis der Besucher zustimmt (DSGVO). Opt-out: Sie laufen, bis der Besucher ablehnt.`,
+        modeOptIn: `Opt-in (vorher fragen)`,
+        modeOptOut: `Opt-out (bis zur Ablehnung ausführen)`,
+        revision: `Einwilligungsrevision`,
+        revisionDescription: `Erhöhen Sie diese Nummer bei jeder Änderung Ihrer Cookie-Richtlinie, um erneut um Einwilligung zu bitten. 0 deaktiviert die Versionierung.`,
+        autoShow: `Banner automatisch anzeigen`,
+        autoShowDescription: `Zeigt das Banner beim ersten Besuch. Ausschalten, um es nur über einen eigenen Auslöser anzuzeigen.`,
+        hideFromBots: `Vor Bots verbergen`,
+        hideFromBotsDescription: `Überspringt das Banner für erkannte Crawler und Bots.`,
+
+        // Live-Vorschau
+        previewHeading: `Live-Vorschau`,
+        previewNote: `Das echte Banner, aktualisiert bei Änderungen. Beispieltexte, die echten Texte stammen aus dem Wörterbuch.`,
+        previewTitle: `Wir verwenden Cookies`,
+        previewDescription: `Diese Website verwendet Cookies, um Ihr Erlebnis zu verbessern.`,
+        previewAcceptAll: `Alle akzeptieren`,
+        previewRejectAll: `Alle ablehnen`,
+        previewManage: `Einstellungen verwalten`,
+        previewOpenTab: `In neuem Tab öffnen`,
+        previewTabOpenHint: `Die Vorschau ist in einem Tab geöffnet und aktualisiert sich dort. Schließen Sie den Tab, um sie wieder hier zu sehen.`,
+        previewTabBlocked: `Der Browser hat den Vorschau-Tab blockiert. Erlauben Sie Pop-ups für diese Website und versuchen Sie es erneut.`,
+
         // Layouts, named after the Orestbida library so the docs stay readable
         layoutBox: `Box`,
         layoutBoxInline: `Box, Schaltflächen nebeneinander`,

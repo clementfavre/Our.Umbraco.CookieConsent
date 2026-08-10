@@ -75,6 +75,30 @@ const THEMES = [
     { value: 'dark', labelKey: 'cookieConsent_themeDark' },
 ];
 
+const CONSENT_MODES = [
+    { value: 'OptIn', labelKey: 'cookieConsent_modeOptIn' },
+    { value: 'OptOut', labelKey: 'cookieConsent_modeOptOut' },
+];
+
+// Enum name -> orestbida string, mirrors the GetDisplayName mapping the front-end view uses
+const CC_LAYOUT = {
+    Box: 'box', BoxInline: 'box inline', BoxWide: 'box wide',
+    Cloud: 'cloud', CloudInline: 'cloud inline',
+    Bar: 'bar', BarInline: 'bar inline',
+};
+const CC_POSITION = {
+    TopLeft: 'top left', TopCenter: 'top center', TopRight: 'top right',
+    MiddleLeft: 'middle left', MiddleCenter: 'middle center', MiddleRight: 'middle right',
+    BottomLeft: 'bottom left', BottomCenter: 'bottom center', BottomRight: 'bottom right',
+};
+const CC_PREF_LAYOUT = { Box: 'box', Bar: 'bar', BarWide: 'bar wide' };
+
+// The preview library lives here; loaded inside an isolated frame, not in the backoffice itself
+const PREVIEW_LIB_CSS = '/libraries/cookieconsent-orestbida/cookieconsent.min.css';
+const PREVIEW_LIB_JS = '/libraries/cookieconsent-orestbida/cookieconsent.umd.min.js';
+// Shared by the embedded frame and the detached tab, both listen and render the same way
+const PREVIEW_CHANNEL = 'cc-preview';
+
 // value is the contract shared with BuiltInScriptProviders.cs
 const BUILT_IN_PROVIDERS = [
     {
@@ -105,9 +129,15 @@ export class CookieConsentDashboardElement extends UmbLitElement {
         _settings: { state: true },
         _loading: { state: true },
         _saveState: { state: true },
+        _previewTabOpen: { state: true },
     };
 
     #notificationContext;
+    #previewChannel;
+    #previewTimer;
+    #previewTab;
+    #previewPoll;
+    #previewDoc;
 
     constructor() {
         super();
@@ -115,6 +145,7 @@ export class CookieConsentDashboardElement extends UmbLitElement {
         this._settings = undefined;
         this._loading = true;
         this._saveState = undefined;
+        this._previewTabOpen = false;
 
         this.consumeContext(UMB_NOTIFICATION_CONTEXT, (context) => {
             this.#notificationContext = context;
@@ -122,6 +153,28 @@ export class CookieConsentDashboardElement extends UmbLitElement {
 
         // Loaded here rather than on connect, so switching dashboards does not throw away unsaved edits
         this.#loadSettings();
+    }
+
+    connectedCallback() {
+        super.connectedCallback();
+        // A frame or the detached tab announcing it is ready asks us to (re)send the current config
+        this.#previewChannel = new BroadcastChannel(PREVIEW_CHANNEL);
+        this.#previewChannel.onmessage = (event) => {
+            if (event.data?.type === 'cc-ready') this.#broadcastPreview();
+        };
+    }
+
+    disconnectedCallback() {
+        super.disconnectedCallback();
+        this.#previewChannel?.close();
+        this.#previewChannel = undefined;
+        clearTimeout(this.#previewTimer);
+        clearInterval(this.#previewPoll);
+    }
+
+    updated(changed) {
+        // Every edit swaps the settings object, so this fires on any change worth previewing
+        if (changed.has('_settings') && this._settings) this.#schedulePreview();
     }
 
     async #request(path, method = 'GET', body) {
@@ -191,6 +244,12 @@ export class CookieConsentDashboardElement extends UmbLitElement {
 
         settings.customScripts = settings.customScripts ?? [];
         settings.builtInScripts = settings.builtInScripts ?? [];
+        settings.complianceOptions = settings.complianceOptions ?? {
+            revision: 0,
+            mode: 'OptIn',
+            autoShow: true,
+            hideFromBots: true,
+        };
         this._settings = settings;
     }
 
@@ -244,7 +303,8 @@ export class CookieConsentDashboardElement extends UmbLitElement {
     #renderSettings() {
         return html`
             ${this.#renderCategories()} ${this.#renderLanguage()} ${this.#renderAppearance()}
-            ${this.#renderBuiltInScripts()} ${this.#renderCustomScripts()}
+            ${this.#renderPreview()} ${this.#renderCompliance()} ${this.#renderBuiltInScripts()}
+            ${this.#renderCustomScripts()}
         `;
     }
 
@@ -424,6 +484,238 @@ export class CookieConsentDashboardElement extends UmbLitElement {
                 </umb-property-layout>
             </uui-box>
         `;
+    }
+
+    #renderCompliance() {
+        const compliance = this._settings.complianceOptions ?? {};
+
+        return html`
+            <uui-box headline=${this.localize.term('cookieConsent_complianceTitle')}>
+                <p class="box-description">${this.localize.term('cookieConsent_complianceDescription')}</p>
+
+                <umb-property-layout
+                    label=${this.localize.term('cookieConsent_consentMode')}
+                    description=${this.localize.term('cookieConsent_consentModeDescription')}>
+                    <div slot="editor">
+                        ${this.#renderSelect(
+                            this.localize.term('cookieConsent_consentMode'),
+                            this.#options(CONSENT_MODES),
+                            compliance.mode,
+                            (value) => this.#update((settings) => (settings.complianceOptions.mode = value)),
+                        )}
+                    </div>
+                </umb-property-layout>
+
+                <umb-property-layout
+                    label=${this.localize.term('cookieConsent_revision')}
+                    description=${this.localize.term('cookieConsent_revisionDescription')}>
+                    <uui-input
+                        slot="editor"
+                        type="number"
+                        min="0"
+                        step="1"
+                        label=${this.localize.term('cookieConsent_revision')}
+                        .value=${compliance.revision ?? 0}
+                        @change=${(event) =>
+                            this.#update(
+                                (settings) => (settings.complianceOptions.revision = Number(event.target.value) || 0),
+                            )}></uui-input>
+                </umb-property-layout>
+
+                <umb-property-layout
+                    label=${this.localize.term('cookieConsent_autoShow')}
+                    description=${this.localize.term('cookieConsent_autoShowDescription')}>
+                    <uui-toggle
+                        slot="editor"
+                        aria-label=${this.localize.term('cookieConsent_autoShow')}
+                        .checked=${!!compliance.autoShow}
+                        @change=${() =>
+                            this.#update(
+                                (settings) => (settings.complianceOptions.autoShow = !settings.complianceOptions.autoShow),
+                            )}></uui-toggle>
+                </umb-property-layout>
+
+                <umb-property-layout
+                    label=${this.localize.term('cookieConsent_hideFromBots')}
+                    description=${this.localize.term('cookieConsent_hideFromBotsDescription')}>
+                    <uui-toggle
+                        slot="editor"
+                        aria-label=${this.localize.term('cookieConsent_hideFromBots')}
+                        .checked=${!!compliance.hideFromBots}
+                        @change=${() =>
+                            this.#update(
+                                (settings) =>
+                                    (settings.complianceOptions.hideFromBots = !settings.complianceOptions.hideFromBots),
+                            )}></uui-toggle>
+                </umb-property-layout>
+            </uui-box>
+        `;
+    }
+
+    #renderPreview() {
+        return html`
+            <uui-box headline=${this.localize.term('cookieConsent_previewHeading')}>
+                <p class="box-description">${this.localize.term('cookieConsent_previewNote')}</p>
+                <div class="cc-preview__actions">
+                    <uui-button
+                        look="secondary"
+                        label=${this.localize.term('cookieConsent_previewOpenTab')}
+                        @click=${this.#openPreviewTab}></uui-button>
+                </div>
+                ${this._previewTabOpen
+                    ? html`<p class="hint">${this.localize.term('cookieConsent_previewTabOpenHint')}</p>`
+                    : html`<iframe
+                          class="cc-preview__stage"
+                          title=${this.localize.term('cookieConsent_previewHeading')}
+                          .srcdoc=${this.#previewSrcdoc}></iframe>`}
+            </uui-box>
+        `;
+    }
+
+    // Sends the current settings, as an orestbida config, to whichever surface is listening
+    #broadcastPreview() {
+        if (!this._settings || !this.#previewChannel) return;
+        this.#previewChannel.postMessage({
+            type: 'cc-config',
+            config: this.#buildPreviewConfig(),
+            dark: this._settings.theme === 'dark',
+        });
+    }
+
+    // Rebuilding the whole banner on every keystroke would flicker, so coalesce the bursts
+    #schedulePreview() {
+        clearTimeout(this.#previewTimer);
+        this.#previewTimer = setTimeout(() => this.#broadcastPreview(), 120);
+    }
+
+    #openPreviewTab() {
+        const tab = window.open('', 'cc-preview-tab');
+        if (!tab) {
+            this.#notify('danger', 'cookieConsent_error', 'cookieConsent_previewTabBlocked');
+            return;
+        }
+
+        tab.document.open();
+        tab.document.write(this.#previewSrcdoc);
+        tab.document.close();
+        this.#previewTab = tab;
+        this._previewTabOpen = true;
+
+        // No unload event fires cross-tab, so poll to bring the preview back when it is closed
+        clearInterval(this.#previewPoll);
+        this.#previewPoll = setInterval(() => {
+            if (this.#previewTab?.closed) {
+                clearInterval(this.#previewPoll);
+                this.#previewTab = undefined;
+                this._previewTabOpen = false;
+            }
+        }, 800);
+    }
+
+    #buildPreviewConfig() {
+        const settings = this._settings ?? {};
+        const gui = settings.guiOptions ?? {};
+        const lang = 'preview';
+
+        const categories = {};
+        const sections = [];
+        Object.keys(settings.applicableCategories ?? {}).forEach((key) => {
+            const category = settings.applicableCategories[key];
+            if (!category?.enabled) return;
+            const k = key.toLowerCase();
+            categories[k] = { enabled: true, readOnly: !!category.readOnly };
+            const labels = CATEGORIES[k];
+            sections.push({
+                title: labels ? this.localize.term(labels.nameKey) : key,
+                description: labels ? this.localize.term(labels.descriptionKey) : '',
+                linkedCategory: k,
+            });
+        });
+        // orestbida needs at least one category, fall back to a locked necessary one
+        if (!Object.keys(categories).length) categories.necessary = { enabled: true, readOnly: true };
+
+        const translations = {};
+        translations[lang] = {
+            consentModal: {
+                title: this.localize.term('cookieConsent_previewTitle'),
+                description: this.localize.term('cookieConsent_previewDescription'),
+                acceptAllBtn: this.localize.term('cookieConsent_previewAcceptAll'),
+                rejectAllBtn: this.localize.term('cookieConsent_previewRejectAll'),
+                showPreferencesBtn: this.localize.term('cookieConsent_previewManage'),
+            },
+            preferencesModal: {
+                title: this.localize.term('cookieConsent_previewManage'),
+                acceptAllBtn: this.localize.term('cookieConsent_previewAcceptAll'),
+                rejectAllBtn: this.localize.term('cookieConsent_previewRejectAll'),
+                savePreferencesBtn: this.localize.term('cookieConsent_save'),
+                sections,
+            },
+        };
+
+        return {
+            // A dedicated cookie so the preview's reset never clears the real consent
+            cookie: { name: 'cc_cookie_preview' },
+            autoShow: true,
+            // Would otherwise dim the whole preview surface
+            disablePageInteraction: false,
+            guiOptions: {
+                consentModal: {
+                    layout: CC_LAYOUT[gui.consentModalLayout] || 'box',
+                    position: CC_POSITION[gui.consentModalPosition] || 'bottom left',
+                    equalWeightButtons: true,
+                    flipButtons: false,
+                },
+                preferencesModal: {
+                    layout: CC_PREF_LAYOUT[gui.preferencesModalLayout] || 'box',
+                    position: String(gui.preferencesModalPosition || 'Right').toLowerCase(),
+                },
+            },
+            categories,
+            language: { default: lang, translations },
+        };
+    }
+
+    // A self-contained document that loads the library and renders whatever config it is sent.
+    // The same markup backs the embedded frame and the detached tab, kept identical on purpose.
+    get #previewSrcdoc() {
+        if (this.#previewDoc) return this.#previewDoc;
+
+        const origin = window.location.origin;
+        this.#previewDoc = `<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<link rel="stylesheet" href="${origin}${PREVIEW_LIB_CSS}">
+<style>
+  html,body{margin:0;height:100%;background:#f3f4f7;}
+  html.cc--darkmode,html.cc--darkmode body{background:#171a21;}
+</style>
+</head>
+<body>
+<script src="${origin}${PREVIEW_LIB_JS}"></script>
+<script>
+(function(){
+  var channel = new BroadcastChannel('${PREVIEW_CHANNEL}');
+  function render(config, dark){
+    if(!window.CookieConsent) return;
+    document.documentElement.classList.toggle('cc--darkmode', !!dark);
+    try {
+      window.CookieConsent.reset(true);
+      window.CookieConsent.run(config);
+      if (typeof window.CookieConsent.show === 'function') window.CookieConsent.show(true);
+    } catch (e) {}
+  }
+  channel.onmessage = function(event){
+    var data = event.data || {};
+    if (data.type === 'cc-config') render(data.config, data.dark);
+  };
+  // Now that the library is loaded, ask the dashboard for the current config
+  channel.postMessage({ type: 'cc-ready' });
+})();
+</script>
+</body>
+</html>`;
+        return this.#previewDoc;
     }
 
     #renderBuiltInScripts() {
@@ -628,6 +920,19 @@ document.head.appendChild(s);</umb-code-block
             uui-input,
             uui-select {
                 width: 100%;
+            }
+
+            .cc-preview__actions {
+                margin-bottom: var(--uui-size-space-4);
+            }
+
+            /* An iframe isolates the fixed-position banner and the library CSS from the backoffice */
+            .cc-preview__stage {
+                width: 100%;
+                height: 420px;
+                border: 1px solid var(--uui-color-border);
+                border-radius: var(--uui-border-radius);
+                background: #f3f4f7;
             }
         `,
     ];

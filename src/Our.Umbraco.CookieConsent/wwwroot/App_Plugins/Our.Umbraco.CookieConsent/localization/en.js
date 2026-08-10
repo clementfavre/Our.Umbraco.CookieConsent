@@ -46,6 +46,32 @@ export default {
         disablePageInteraction: `Block the page until a choice is made`,
         disablePageInteractionDescription: `Dims the site and prevents browsing until the visitor answers.`,
 
+        // Behaviour and compliance
+        complianceTitle: `Behaviour and compliance`,
+        complianceDescription: `Consent mode, versioning and how the banner shows up.`,
+        consentMode: `Consent mode`,
+        consentModeDescription: `Opt-in keeps non-essential scripts off until the visitor accepts (GDPR). Opt-out runs them until the visitor refuses.`,
+        modeOptIn: `Opt-in (ask before)`,
+        modeOptOut: `Opt-out (run until refused)`,
+        revision: `Consent revision`,
+        revisionDescription: `Increase this number whenever your cookie policy changes to ask visitors for consent again. 0 disables versioning.`,
+        autoShow: `Show the banner automatically`,
+        autoShowDescription: `Displays the banner on the first visit. Turn off to show it only from your own trigger.`,
+        hideFromBots: `Hide from bots`,
+        hideFromBotsDescription: `Skips the banner for detected crawlers and bots.`,
+
+        // Live preview
+        previewHeading: `Live preview`,
+        previewNote: `The real banner, updating as you change the settings. Sample wording, the live texts come from the Dictionary.`,
+        previewTitle: `We use cookies`,
+        previewDescription: `This site uses cookies to improve your experience.`,
+        previewAcceptAll: `Accept all`,
+        previewRejectAll: `Reject all`,
+        previewManage: `Manage preferences`,
+        previewOpenTab: `Open in a new tab`,
+        previewTabOpenHint: `The preview is open in a tab and updates there. Close the tab to see it here again.`,
+        previewTabBlocked: `The browser blocked the preview tab. Allow pop-ups for this site and try again.`,
+
         // Layouts, named after the Orestbida library so the docs stay readable
         layoutBox: `Box`,
         layoutBoxInline: `Box inline`,
