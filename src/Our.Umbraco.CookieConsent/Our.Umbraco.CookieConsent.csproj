@@ -10,7 +10,7 @@
   </PropertyGroup>
   <PropertyGroup>
     <PackageId>Our.Umbraco.CookieConsent</PackageId>
-    <Version>17.0.0</Version>
+    <Version>17.1.0</Version>
     <Product>Our.Umbraco.CookieConsent - Cookie Management for Umbraco</Product>
     <Title>Our.Umbraco.CookieConsent</Title>
     <Description>Our.Umbraco.CookieConsent: A Umbraco package for adding a customizable cookie consent banner to your Umbraco site. Powered by the Orestbida/CookieConsent library.</Description>
@@ -24,6 +24,10 @@
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <PackageIcon>OurUmbracoCookieConsent.png</PackageIcon>
+  </PropertyGroup>
+  <!-- Ignore vulnerabilities from transient dependencies -->
+  <PropertyGroup>
+    <NuGetAuditMode>direct</NuGetAuditMode>
   </PropertyGroup>
   <ItemGroup>
     <!-- Umbraco 18 also targets net10.0, so only this range keeps the package off it -->
