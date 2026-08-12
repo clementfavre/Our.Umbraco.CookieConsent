@@ -302,8 +302,8 @@ export class CookieConsentDashboardElement extends UmbLitElement {
 
     #renderSettings() {
         return html`
-            ${this.#renderCategories()} ${this.#renderLanguage()} ${this.#renderAppearance()}
-            ${this.#renderPreview()} ${this.#renderCompliance()} ${this.#renderBuiltInScripts()}
+            ${this.#renderPreview()} ${this.#renderCategories()} ${this.#renderLanguage()}
+            ${this.#renderAppearance()} ${this.#renderCompliance()} ${this.#renderBuiltInScripts()}
             ${this.#renderCustomScripts()}
         `;
     }
