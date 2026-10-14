@@ -178,13 +178,13 @@
                     title: vm.t.previewTitle,
                     description: vm.t.previewDescription,
                     acceptAllBtn: vm.t.previewAcceptAll,
-                    rejectAllBtn: vm.t.previewRejectAll,
+                    acceptNecessaryBtn: vm.t.previewRejectAll,
                     showPreferencesBtn: vm.t.previewManage
                 },
                 preferencesModal: {
                     title: vm.t.previewManage,
                     acceptAllBtn: vm.t.previewAcceptAll,
-                    rejectAllBtn: vm.t.previewRejectAll,
+                    acceptNecessaryBtn: vm.t.previewRejectAll,
                     savePreferencesBtn: vm.t.save,
                     sections: sections
                 }
